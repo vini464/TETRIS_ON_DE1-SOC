@@ -25,11 +25,27 @@ void close_physical (int fd){
     close(fd);
 }
 
-void * map_physical(int fd, unsigned int base, unsigned int span){
-    void *virtual_base;
-    virtual_base = mmap (NULL,span, (PROT_READ | PROT_WRITE))
-}
-int unmap_physical(void *, unsigned int){
+void * map_physical(int fd, unsigned int base, unsigned int span) {
+	void * virtual_base;
 
+	// Get a mapping from physical addresses to virtual addresses
+	virtual_base = mmap(NULL, span, (PROT_READ | PROT_WRITE), MAP_SHARED, fd, base);
+	if (virtual_base == NULL) {
+		printf("ERROR: mmap() failed...\n");
+		close(fd);
+		return(NULL);
+	}
+
+	return virtual_base;
+}
+
+int unmap_physical(void * virtual_base, unsigned int span)
+{
+   if (munmap (virtual_base, span) != 0)
+   {
+      printf ("ERROR: munmap() failed...\n");
+      return (-1);
+   }
+   return 0;
 }
 
