@@ -2,8 +2,9 @@
 
 void Pinmux_Config(){
     // Set up pin muxing (in sysmgr) to connect ADXL345 wires to I2C0
-    *SYSMGR_I2C0USEFPGA = 0;
-    *SYSMGR_GENERALIO7 = 1;
+    
+    *SYSMGR_I2C0USEFPGA = 0;//0 indica que vamos se comunicar via HPS, 1 seria via FPGA
+    *SYSMGR_GENERALIO7 = 1;//Habilita a comunicação do I2C nesses GPIO, sendo o SDA e o SCL um em cada GPIO
     *SYSMGR_GENERALIO8 = 1;
 }
 
@@ -13,19 +14,25 @@ void I2C0_Init(){
     // Abort any ongoing transmits and disable I2C0.
     *I2C0_ENABLE = 2;
     
-    // Wait until I2C0 is disabled
+    // Espera o I2C0 ser desativado, & é o operador bit a bit de and, no caso está checkando se o bit 0 de ambos é 1.
     while(((*I2C0_ENABLE_STATUS)&0x1) == 1){}
     
-    // Configure the config reg with the desired setting (act as 
-    // a master, use 7bit addressing, fast mode (400kb/s)).
+    //Configuração do reg necessaria para estabelecer comunicação com o acelerometro, setando o master, endereçamentod e 7 bits
+    //Pedido pelo periferico, e no modo de comunicação mais rapida (400kb/s)
     *I2C0_CON = 0x65;
     
-    // Set target address (disable special commands, use 7bit addressing)
+
+    // Setando o "alvo" da comunicação, no caso o acelerometro.
     *I2C0_TAR = 0x53;
     
     // Set SCL high/low counts (Assuming default 100MHZ clock input to I2C0 Controller).
     // The minimum SCL high period is 0.6us, and the minimum SCL low period is 1.3us,
     // However, the combined period must be 2.5us or greater, so add 0.3us to each.
+
+    /*O código configura os tempos mínimos para o sinal de clock SCL de acordo com os requisitos do 
+    modo de operação Fast Mode (400kHz). Os tempos são ajustados para garantir que o 
+    ciclo total do SCL seja de pelo menos 2,5 microsegundos.*/
+
     *I2C0_FS_SCL_HCNT = 60 + 30; // 0.6us + 0.3us
     *I2C0_FS_SCL_LCNT = 130 + 30; // 1.3us + 0.3us
     
@@ -44,16 +51,25 @@ void I2C0_Init(){
 void I2C0_Enable_FPGA_Access(){
 
     // Deassert fpga bridge resets
+    // Essa linha limpa (coloca em 0) o registrador de reset do bridge (ponte) entre FPGA e HPS,
+    // o que efetivamente retira a FPGA do estado de reset, permitindo a comunicação através do F2H bridge.
     *RSTMGR_BRGMODRST = 0;
     
     // Enable non-secure masters to access I2C0
+    // Essa linha habilita os masters "não seguros" para acessar o controlador I2C0.
+    // Ela modifica o registrador L3REGS_L4SP usando uma operação OR bit a bit para definir o bit 2 (0x4),
+    // garantindo que a FPGA possa acessar o I2C0.
     *L3REGS_L4SP = *L3REGS_L4SP | 0x4;
     
     // Enable non-secure masters to access pinmuxing registers (in sysmgr)
+    // Essa linha habilita os masters "não seguros" para acessar os registradores de pinmux no sysmgr.
+    // O bit 4 (0x10) é ativado no registrador L3REGS_L4OSC1 usando a operação OR bit a bit,
+    // permitindo à FPGA controlar o pinmux (configuração de pinos) necessário para acessar o I2C0.
     *L3REGS_L4OSC1 = *L3REGS_L4OSC1 | 0x10;
 }
 
 // Write value to internal register at address
+//Funciona em 2 passos, primeiro envia um sinal de start para o reg no endereço,  e depois o valor a ser escrito
 void ADXL345_REG_WRITE(uint8_t address, uint8_t value){
     
     // Send reg address (+0x400 to send START signal)
@@ -64,6 +80,10 @@ void ADXL345_REG_WRITE(uint8_t address, uint8_t value){
 }
 
 // Read value from internal register at address
+/*Funciona em 3 passos.
+1° envia um sinal de start para o endereço desejado.
+2° Solicita a leitura desse registrador
+3° Espera a resposta e escreve ela no *value */
 void ADXL345_REG_READ(uint8_t address, uint8_t *value){
 
     // Send reg address (+0x400 to send START signal)
@@ -78,6 +98,13 @@ void ADXL345_REG_READ(uint8_t address, uint8_t *value){
 }
 
 // Read multiple consecutive internal registers
+/*Basicamente usado para ler uma sequencia de registradores, é preferivel do que chamas multiplas leituras unicas.
+funciona assim.
+Passa como parametro o endereço do primeiro reg, um array de valores e o tamanho
+1° manda um sinal de start para o primeiro reg
+2° dentrod o loop, envia o comando de leitura para cada registrador
+3° a leitura de bytes é feito dentro do while, o registrador I2C0_RXFLR é verificado para saber se ainda tem dados no buffer
+então o valor é lido e armazenado dentro do array values*/
 void ADXL345_REG_MULTI_READ(uint8_t address, uint8_t values[], uint8_t len){
 
     // Send reg address (+0x400 to send START signal)
