@@ -117,7 +117,7 @@ void accel_reg_read(uint8_t address, uint8_t *value){
     *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
 }
 
-int main() {
+int test_communication() {
     // Abre e mapeia /dev/mem
     int fd = open_and_mmap_dev_mem();
     if (fd == -1) {
@@ -139,5 +139,29 @@ int main() {
 
     return 0;
 }
+
+void accel_init() {
+    accel_reg_write(DATA_FORMAT, 0x03 | 0x08) //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
+    accel_reg_write(BW_RATE, 0x0B) //Coloca o fluxo de saida de dados em 200Hz
+    accel_reg_write(THRESH_ACT,0x06) // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+
+    accel_reg_write(POWER_CTL,0x00) //Seta o power para 0, parando
+    accel_reg_write(POWER_CTL,0x08) //Inicia a medição.
+
+}
+
+bool accel_activity_update(){
+    bool bReady = false;
+    uint8_t data8;
+
+    accel_reg_read(INT_SOURCE,&data8)
+     if (data8 & (1 << 4))
+        bReady = true;
+    
+    return bReady;
+}
+
+
+
 
 
