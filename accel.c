@@ -114,7 +114,7 @@ void accel_reg_read(uint8_t address, uint8_t *value){
     write_register(i2c0_regs,I2C0_DATA_CMD, 0x100);
     while (read_register(i2c0_regs,I2C0_RXFLR) == 0)
     {}
-    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD)
+    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
 }
 
 int main() {
