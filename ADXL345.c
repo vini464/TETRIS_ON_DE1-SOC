@@ -266,3 +266,4 @@ void ADXL345_XYZ_Read(int16_t szData16[3]){
 void ADXL345_IdRead(uint8_t *pId){
     ADXL345_REG_READ(ADXL345_REG_DEVID, pId);
 }
+
