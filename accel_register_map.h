@@ -1,11 +1,11 @@
-//The ADXL345 automatically modulates its power consumption 
-//in proportion to its output data rate,
+#ifndef ACCEL_REGISTER_MAP_H
+#define ACCEL_REGISTER_MAP_H
 
 #define DEVID 0x00 //R, segura um valor fixo de ID que é 345 (11100101)
 
 #define THRESH_TAP 0x1D /* vai de 250 (16g) até 0, quanto menor, mais facil detecar um movimento, The scale factor is 
 62.5 mg/LSB (that is, 0xFF = 16 g)*/
- //Posso usar pra configurar o Single_Tap mode
+ //Posso usar pra configurar o Shingle_Tap mode
 
 
 #define OFSX 0x1E
@@ -132,3 +132,4 @@ com o segundo toque começando após o tempo especificado no registro LATENT (En
 especificado no registro WINDOW (Endereço 0x23). Veja a seção de Detecção de Toque para mais detalhes.*/
 /*"O bit SINGLE_TAP é ativado quando um único evento de aceleração que é maior que o valor no registro THRESH_TAP (Endereço 0x1D)
 ocorre por um tempo menor do que o especificado no registro DUR (Endereço 0x21)" Trecho retirado e traduzido do Data Sheet*/
+#endif

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdint.h>
+#include "accel_register_map.h"
 
 #define I2C0_BASE_ADDR 0xFFC04000  // Endereço base do controlador I2C0
 #define I2C0_REG_SIZE  0x1000      // Tamanho da região mapeada (4KB)
@@ -63,7 +64,7 @@ void close_and_unmap_dev_mem(int fd) {
 #define I2C0_CON                0x00
 #define I2C0_TAR                0x04
 #define I2C0_DATA_CMD           0x10
-#define I2C0_SS_SCL_HCNT        0x1C
+#define I2C0_FS_SCL_HCNT        0x1C
 #define I2C0_FS_SCL_LCNT        0x20
 #define I2C0_CLR_INTR           0x40
 #define I2C0_ENABLE             0x6C
@@ -71,8 +72,16 @@ void close_and_unmap_dev_mem(int fd) {
 #define I2C0_RXFLR              0x78
 #define I2C0_ENABLE_STATUS      0x9C
 
+
+
+#define I2C0_SS_SCL_HCNT        0x14
+#define I2C0_SS_SCL_LCNT        0x28
+#define I2C0_INTR_MASK          0x30
+#define I2C0_TX_ABRT            0x54
+#define I2C0_TX_ABRT_SOURCE     0x80
+
 void write_register(volatile uint32_t *base, uint32_t offset, uint32_t value){
-    base[offset / 4] = value
+    base[offset / 4] = value;
 
 }
 
@@ -82,14 +91,53 @@ uint32_t read_register(volatile uint32_t *base, uint32_t offset) {
 
 
 void I2C0_init(){
-    write_register(*I2C0_BASE_ADDR,I2C0_ENABLE, 0x02)
-    while ((read_register(*I2C0_BASE_ADDR,0x9C) & 0x1) == 1 )
+    write_register(i2c0_regs,I2C0_ENABLE, 0x02);
+    while ((read_register(i2c0_regs,0x9C) & 0x1) == 1 )
     {}
-    write_register(*I2C0_BASE_ADDR,I2C0_CON, 0x65)
-    write_register(*I2C0_BASE_ADDR,I2C0_TAR, 0x53)
+    write_register(i2c0_regs,I2C0_CON, 0x65);
+    write_register(i2c0_regs,I2C0_TAR, 0x53);
+    
+    write_register(i2c0_regs,I2C0_FS_SCL_HCNT, 60+30);
+    write_register(i2c0_regs,I2C0_FS_SCL_LCNT, 130+30);
 
-    write_register(*I2C0_BASE_ADDR,I2C0_CON, 0x65)
-    write_register(*I2C0_BASE_ADDR,I2C0_CON, 0x65)
-
+    write_register(i2c0_regs,I2C0_ENABLE, 0x01);
+    while ((read_register(i2c0_regs,0x9C) & 0x1) == 0 )
+    {}
 }
+
+void accel_reg_write(uint8_t address, uint8_t value){
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
+    write_register(i2c0_regs,I2C0_DATA_CMD, value);
+}
+void accel_reg_read(uint8_t address, uint8_t *value){
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
+    write_register(i2c0_regs,I2C0_DATA_CMD, 0x100);
+    while (read_register(i2c0_regs,I2C0_RXFLR) == 0)
+    {}
+    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD)
+}
+
+int main() {
+    // Abre e mapeia /dev/mem
+    int fd = open_and_mmap_dev_mem();
+    if (fd == -1) {
+        return -1;
+    }
+
+    // Inicializa o I2C0
+    I2C0_init();
+
+    // Lê o ID do acelerômetro (registro 0x00)
+    uint8_t device_id;
+    accel_reg_read(DEVID, &device_id);
+
+    // Exibe o valor lido
+    printf("Device ID: 0x%02X\n", device_id);
+
+    // Fecha e desmapeia /dev/mem
+    close_and_unmap_dev_mem(fd);
+
+    return 0;
+}
+
 
