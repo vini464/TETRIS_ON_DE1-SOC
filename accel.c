@@ -91,17 +91,17 @@ uint32_t read_register(volatile uint32_t *base, uint32_t offset) {
 
 
 void I2C0_init(){
-    write_register(i2c0_regs,I2C0_ENABLE, 0x02);
-    while ((read_register(i2c0_regs,0x9C) & 0x1) == 1 )
-    {}
-    write_register(i2c0_regs,I2C0_CON, 0x65);
-    write_register(i2c0_regs,I2C0_TAR, 0x53);
+    write_register(i2c0_regs,I2C0_ENABLE, 0x02); //Aborta qualquer comunicação
+    while ((read_register(i2c0_regs,I2C0_ENABLE_STATUS) & 0x1) == 1 )
+    {} //Espera a comunicação voltar ao normal
+    write_register(i2c0_regs,I2C0_CON, 0x65); //Configura HPS como master, fast mode (400kb/s) e 7 bit adressing
+    write_register(i2c0_regs,I2C0_TAR, 0x53); // Coloca o acelerometro como target.
     
-    write_register(i2c0_regs,I2C0_FS_SCL_HCNT, 60+30);
-    write_register(i2c0_regs,I2C0_FS_SCL_LCNT, 130+30);
+    write_register(i2c0_regs,I2C0_FS_SCL_HCNT, 60+30);  //
+    write_register(i2c0_regs,I2C0_FS_SCL_LCNT, 130+30); //
 
     write_register(i2c0_regs,I2C0_ENABLE, 0x01);
-    while ((read_register(i2c0_regs,0x9C) & 0x1) == 0 )
+    while ((read_register(i2c0_regs,I2C0_ENABLE_STATUS) & 0x1) == 0 )
     {}
 }
 
@@ -141,12 +141,12 @@ int test_communication() {
 }
 
 void accel_init() {
-    accel_reg_write(DATA_FORMAT, 0x03 | 0x08) //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
-    accel_reg_write(BW_RATE, 0x0B) //Coloca o fluxo de saida de dados em 200Hz
-    accel_reg_write(THRESH_ACT,0x06) // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+    accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
+    accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
+    accel_reg_write(THRESH_ACT,0x06); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
 
-    accel_reg_write(POWER_CTL,0x00) //Seta o power para 0, parando
-    accel_reg_write(POWER_CTL,0x08) //Inicia a medição.
+    accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
+    accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
 
 }
 
@@ -160,6 +160,26 @@ bool accel_activity_update(){
     
     return bReady;
 }
+
+void accel_read_one_axies(uint8_t address, uint8_t *value){
+    uint8_t data8;
+    accel_reg_read(address,data8);
+    *value = data8;
+
+}
+
+int main(){
+    *uint8_t value;
+    if (test_communication == 0){
+        while (1)
+        {
+        
+            accel_read_one_axies(DATA_X0,*value);
+            printf(value);
+        }
+    }
+}
+
 
 
 
