@@ -9,6 +9,11 @@
 #define I2C0_BASE_ADDR 0xFFC04000  // Endereço base do controlador I2C0
 #define I2C0_REG_SIZE  0x1000      // Tamanho da região mapeada (4KB)
 
+typedef int bool;
+#define false 0;
+#define true 1;
+
+
 volatile uint32_t *i2c0_regs;
 
 // Função para abrir especificamente o /dev/mem e retornar o descritor
@@ -135,7 +140,7 @@ int test_communication() {
     printf("Device ID: 0x%02X\n", device_id);
 
     // Fecha e desmapeia /dev/mem
-    close_and_unmap_dev_mem(fd);
+    //close_and_unmap_dev_mem(fd);
 
     return 0;
 }
@@ -143,41 +148,46 @@ int test_communication() {
 void accel_init() {
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
     accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
-    accel_reg_write(THRESH_ACT,0x06); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
-
+    accel_reg_write(THRESH_ACT,0x10); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
     accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
-
 }
 
 bool accel_activity_update(){
     bool bReady = false;
     uint8_t data8;
 
-    accel_reg_read(INT_SOURCE,&data8)
+    accel_reg_read(INT_SOURCE,&data8);
      if (data8 & (1 << 4))
         bReady = true;
     
     return bReady;
 }
 
-void accel_read_one_axies(uint8_t address, uint8_t *value){
-    uint8_t data8;
-    accel_reg_read(address,data8);
-    *value = data8;
-
+void accel_read_one_axies( int16_t *value){
+	int8_t data8, dt[2];
+	int i;
+	*value = 0;
+	accel_reg_read(DATA_X1,&data8);
+	*value += data8;
+	*value = *value << 8;
+	accel_reg_read(DATA_X0,&data8);
+	*value += data8;
 }
 
 int main(){
-    *uint8_t value;
-    if (test_communication == 0){
-        while (1)
-        {
-        
-            accel_read_one_axies(DATA_X0,*value);
-            printf(value);
-        }
+    int16_t value;
+    int fd = open_and_mmap_dev_mem();
+    if (fd == -1) {
+	    return -1;
     }
+    I2C0_init();
+        accel_init();
+        while (1)
+        {               accel_read_one_axies(&value);
+            printf("valor de x: %d\n", value);
+        }
+return 0;
 }
 
 
