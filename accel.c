@@ -110,18 +110,6 @@ void I2C0_init(){
     {}
 }
 
-void accel_reg_write(uint8_t address, uint8_t value){
-    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
-    write_register(i2c0_regs,I2C0_DATA_CMD, value);
-}
-void accel_reg_read(uint8_t address, uint8_t *value){
-    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
-    write_register(i2c0_regs,I2C0_DATA_CMD, 0x100);
-    while (read_register(i2c0_regs,I2C0_RXFLR) == 0)
-    {}
-    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
-}
-
 int test_communication() {
     // Abre e mapeia /dev/mem
     int fd = open_and_mmap_dev_mem();
@@ -154,7 +142,54 @@ void accel_init() {
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
 }
 
-bool accel_activity_update(){
+void accel_calibrate(){
+
+    int average_x = 0;
+    int average_y = 0;
+    int average_z = 0;
+    int16_t XYZ[3];
+    int8_t offset_x;
+    int8_t offset_y;
+    int8_t offset_z;
+
+    accel_reg_write(POWER_CTL,0x00);
+    
+    accel_reg_read(OFSX,(uint8_t *)&offset_x);
+    accel_reg_read(OFSY,(uint8_t *)&offset_y);
+    accel_reg_read(OFSZ,(uint8_t *)&offset_z);
+
+    uint8_t saved_bw;
+    accel_reg_read(BW_RATE, &saved_bw);
+    accel_reg_write(BW_RATE, 0x0a);
+
+    uint8_t saved_dataF;
+    accel_reg_read(DATA_FORMAT, &saved_dataF);
+    accel_reg_write(DATA_FORMAT, 0x03 | 0x08);
+
+    accel_reg_write(POWER_CTL,0x08);
+    int i = 0;
+    while(i < 32){
+        if (accel_isDataReady())
+        {
+            accel_readXYZ(XYZ);
+            average_x += XYZ[0];
+            average_y += XYZ[1];
+            average_z += XYZ[2];
+            i++;
+        }  
+    }
+    accel_reg_write(POWER_CTL,0x00);
+    
+    accel_reg_write(OFSX,offset_x);
+    accel_reg_write(OFSY,offset_y);
+    accel_reg_write(OFSZ,offset_z);
+
+    accel_reg_write(BW_RATE,saved_bw);
+    accel_reg_write(DATA_FORMAT,saved_dataF);
+    accel_reg_write(POWER_CTL,0x08);
+}
+
+bool accel_isDataReady(){
     bool bReady = false;
     uint8_t data8;
 
@@ -165,7 +200,7 @@ bool accel_activity_update(){
     return bReady;
 }
 
-bool accel_activity_update(){
+bool accel_hadActivity(){
     bool bReady = false;
     uint8_t data8;
 
@@ -186,52 +221,72 @@ void accel_read_one_axies( int16_t *value){
 	accel_reg_read(DATA_X0,&data8);
 	*value += data8;
 }
+void accel_reg_write(uint8_t address, uint8_t value){
+    
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
+    write_register(i2c0_regs,I2C0_DATA_CMD, value);
+}
 
-void I2C_readXYZ(uint8_t values[]){
+void accel_reg_read(uint8_t address, uint8_t *value){
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
+    write_register(i2c0_regs,I2C0_DATA_CMD, 0x100);
+    while (read_register(i2c0_regs,I2C0_RXFLR) == 0)
+    {}
+    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
+}
 
-    *I2C0_DATA_CMD = DATA_X0 + 0x400; //Envia um sinal de start para o primeiro registrador
+void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len){
+
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400); //Envia um sinal de start para o primeiro registrador
 
     int i = 0;
-    tam = 6;
 
-    for(i;i<tam;i++){
-        *I2C0_DATA_CMD = 0x100; //Envia um sinal de leitura para os proximos 6 registradores
+    for(i;i<len;i++){
+        write_register(i2c0_regs,I2C0_DATA_CMD, 0x100); //Envia um sinal de leitura para os proximos 6 registradores
     }
-    int pos = 0 //Cria uma variavel para percorrer o array guardado no buffer do I2C
-    while (tam)
+    int byte_index = 0; //Cria uma variavel para percorrer o array guardado no buffer do I2C
+
+    while (read_register(i2c0_regs,I2C0_RXFLR) < len){}
+
+    while (len)
     {
-        if ((*I2C0_RXFLR)>0) //Checka o buffer
+        if (read_register(i2c0_regs,I2C0_RXFLR)>0) //Checka o buffer
         {
-            values[pos] = *I2C0_DATA_CMD;
-            pos++;
-            tam--;
+            values[byte_index] = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
+            byte_index++;
+            len--;
         }
     }
 }
 
 void accel_readXYZ(int16_t XYZ_Data[3]) {
-    uint8_t data8bits[6];
-    I2C_readXYZ((uint8_t *)&szData8);
+    uint8_t XYZ_8bits[6];
+    I2C_readXYZ(DATA_X0, (uint8_t *)&XYZ_8bits, 6);
 
-    XYZ_Data[0] = (XYZ_Data[1] << 8) | XYZ_Data[0]; 
-    XYZ_Data[1] = (XYZ_Data[3] << 8) | XYZ_Data[2];
-    XYZ_Data[2] = (XYZ_Data[5] << 8) | XYZ_Data[4];
+    XYZ_Data[0] = (XYZ_8bits[1] << 8) | XYZ_8bits[0]; 
+    XYZ_Data[1] = (XYZ_8bits[3] << 8) | XYZ_8bits[2];
+    XYZ_Data[2] = (XYZ_8bits[5] << 8) | XYZ_8bits[4];
 
 }
 
 int main(){
-    int16_t value;
+    int16_t value, XYZ_data[3];
+    printf(".");
+    int i = 0;
     int fd = open_and_mmap_dev_mem();
     if (fd == -1) {
 	    return -1;
     }
     I2C0_init();
-        accel_init();
-        while (1)
-        {               accel_read_one_axies(&value);
-            printf("valor de x: %d\n", value);
+    accel_init();
+    while (i < 100000)
+        {   
+            accel_readXYZ(XYZ_data);
+            printf("x: %d - y: %d - z: %d\n", XYZ_data[0], XYZ_data[1], XYZ_data[2]);
+	        i++;
         }
-return 0;
+    fd = close_and_unmap_dev_mem;
+    return 0;
 }
 
 
