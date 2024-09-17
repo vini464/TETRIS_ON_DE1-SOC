@@ -149,6 +149,7 @@ void accel_init() {
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
     accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
     accel_reg_write(THRESH_ACT,0x10); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+    accel_reg_write(INT_ENABLE,0x80 | 0x10); // Permitir detecção de Data_ready e Activity
     accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
 }
@@ -158,7 +159,18 @@ bool accel_activity_update(){
     uint8_t data8;
 
     accel_reg_read(INT_SOURCE,&data8);
-     if (data8 & (1 << 4))
+     if (data8 & (0x80))
+        bReady = true;
+    
+    return bReady;
+}
+
+bool accel_activity_update(){
+    bool bReady = false;
+    uint8_t data8;
+
+    accel_reg_read(INT_SOURCE,&data8);
+     if (data8 & (0x10))
         bReady = true;
     
     return bReady;
@@ -173,6 +185,38 @@ void accel_read_one_axies( int16_t *value){
 	*value = *value << 8;
 	accel_reg_read(DATA_X0,&data8);
 	*value += data8;
+}
+
+void I2C_readXYZ(uint8_t values[]){
+
+    *I2C0_DATA_CMD = DATA_X0 + 0x400; //Envia um sinal de start para o primeiro registrador
+
+    int i = 0;
+    tam = 6;
+
+    for(i;i<tam;i++){
+        *I2C0_DATA_CMD = 0x100; //Envia um sinal de leitura para os proximos 6 registradores
+    }
+    int pos = 0 //Cria uma variavel para percorrer o array guardado no buffer do I2C
+    while (tam)
+    {
+        if ((*I2C0_RXFLR)>0) //Checka o buffer
+        {
+            values[pos] = *I2C0_DATA_CMD;
+            pos++;
+            tam--;
+        }
+    }
+}
+
+void accel_readXYZ(int16_t XYZ_Data[3]) {
+    uint8_t data8bits[6];
+    I2C_readXYZ((uint8_t *)&szData8);
+
+    XYZ_Data[0] = (XYZ_Data[1] << 8) | XYZ_Data[0]; 
+    XYZ_Data[1] = (XYZ_Data[3] << 8) | XYZ_Data[2];
+    XYZ_Data[2] = (XYZ_Data[5] << 8) | XYZ_Data[4];
+
 }
 
 int main(){
