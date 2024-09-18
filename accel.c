@@ -110,27 +110,18 @@ void I2C0_init(){
     {}
 }
 
-int test_communication() {
-    // Abre e mapeia /dev/mem
-    int fd = open_and_mmap_dev_mem();
-    if (fd == -1) {
-        return -1;
-    }
+bool test_communication() {
 
-    // Inicializa o I2C0
-    I2C0_init();
-
-    // Lê o ID do acelerômetro (registro 0x00)
     uint8_t device_id;
     accel_reg_read(DEVID, &device_id);
 
-    // Exibe o valor lido
-    printf("Device ID: 0x%02X\n", device_id);
-
-    // Fecha e desmapeia /dev/mem
-    //close_and_unmap_dev_mem(fd);
-
-    return 0;
+    if (device_id == 0xE5){
+        //printf("Device ID: 0x%02X\n", device_id);
+        return true;
+        //levar para um
+        //printf("Comunicacao estabelecida!")
+    }
+    return false;
 }
 
 void accel_init() {
@@ -142,7 +133,7 @@ void accel_init() {
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
 }
 
-void accel_calibrate(){
+void accel_calibrate(int average_index){
 
     int average_x = 0;
     int average_y = 0;
@@ -168,7 +159,7 @@ void accel_calibrate(){
 
     accel_reg_write(POWER_CTL,0x08);
     int i = 0;
-    while(i < 32){
+    while(i < average_index){
         if (accel_isDataReady())
         {
             accel_readXYZ(XYZ);
@@ -178,7 +169,17 @@ void accel_calibrate(){
             i++;
         }  
     }
+    average_x = average_x / average_index;
+    average_y = average_y / average_index;
+    average_z = average_z / average_index;
+
     accel_reg_write(POWER_CTL,0x00);
+
+    printf("Average X=%d, Y=%d, Z=%d\n", average_x, average_y, average_z);
+
+    offset_x += (0-average_x) / 4;
+    offset_y += (0-average_y) / 4;
+    offset_z += (256-average_z) / 4;
     
     accel_reg_write(OFSX,offset_x);
     accel_reg_write(OFSY,offset_y);
@@ -211,7 +212,7 @@ bool accel_hadActivity(){
     return bReady;
 }
 
-void accel_read_one_axies( int16_t *value){
+/*void accel_read_one_axies( int16_t *value){
 	int8_t data8, dt[2];
 	int i;
 	*value = 0;
@@ -220,7 +221,7 @@ void accel_read_one_axies( int16_t *value){
 	*value = *value << 8;
 	accel_reg_read(DATA_X0,&data8);
 	*value += data8;
-}
+}Descontinuada*/
 void accel_reg_write(uint8_t address, uint8_t value){
     
     write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
