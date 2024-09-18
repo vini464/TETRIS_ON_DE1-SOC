@@ -13,6 +13,8 @@ typedef int bool;
 #define false 0;
 #define true 1;
 
+#define ROUNDED_DIVISION(num, divisor) (((num) + (divisor / 2)) / divisor)
+
 
 volatile uint32_t *i2c0_regs;
 
@@ -169,7 +171,7 @@ void accel_calibrate(int average_index){
             i++;
         }  
     }
-    average_x = average_x / average_index;
+    average_x = average_x / average_index; //Mudar por rounded divisio
     average_y = average_y / average_index;
     average_z = average_z / average_index;
 
@@ -212,16 +214,6 @@ bool accel_hadActivity(){
     return bReady;
 }
 
-/*void accel_read_one_axies( int16_t *value){
-	int8_t data8, dt[2];
-	int i;
-	*value = 0;
-	accel_reg_read(DATA_X1,&data8);
-	*value += data8;
-	*value = *value << 8;
-	accel_reg_read(DATA_X0,&data8);
-	*value += data8;
-}Descontinuada*/
 void accel_reg_write(uint8_t address, uint8_t value){
     
     write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
@@ -280,6 +272,7 @@ int main(){
     }
     I2C0_init();
     accel_init();
+    accel_calibrate(32);
     while (i < 100000)
         {   
             accel_readXYZ(XYZ_data);
