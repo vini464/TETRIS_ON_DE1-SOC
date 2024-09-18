@@ -171,17 +171,17 @@ void accel_calibrate(int average_index){
             i++;
         }  
     }
-    average_x = average_x / average_index; //Mudar por rounded divisio
-    average_y = average_y / average_index;
-    average_z = average_z / average_index;
+    average_x = ROUNDED_DIVISION(average_x,average_index);
+    average_y = ROUNDED_DIVISION(average_y,average_index);
+    average_z = ROUNDED_DIVISION(average_z,average_index);
 
     accel_reg_write(POWER_CTL,0x00);
 
     printf("Average X=%d, Y=%d, Z=%d\n", average_x, average_y, average_z);
 
-    offset_x += (0-average_x) / 4;
-    offset_y += (0-average_y) / 4;
-    offset_z += (256-average_z) / 4;
+    offset_x += ROUNDED_DIVISION(0-average_x, 4);
+    offset_y += ROUNDED_DIVISION(0-average_y, 4);
+    offset_z += ROUNDED_DIVISION(256-average_z, 4);
     
     accel_reg_write(OFSX,offset_x);
     accel_reg_write(OFSY,offset_y);
