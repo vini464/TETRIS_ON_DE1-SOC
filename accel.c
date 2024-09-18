@@ -285,7 +285,7 @@ int main(){
             printf("x: %d - y: %d - z: %d\n", XYZ_data[0], XYZ_data[1], XYZ_data[2]);
 	        i++;
         }
-    fd = close_and_unmap_dev_mem;
+    close_and_unmap_dev_mem(fd);
     return 0;
 }
 
