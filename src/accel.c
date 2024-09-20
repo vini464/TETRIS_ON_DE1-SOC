@@ -5,16 +5,15 @@
 #include <sys/mman.h>
 #include <stdint.h>
 #include "accel_register_map.h"
+#include "accel.h"
 
-#define I2C0_BASE_ADDR 0xFFC04000  // Endereço base do controlador I2C0
-#define I2C0_REG_SIZE  0x1000      // Tamanho da região mapeada (4KB)
 
-typedef int bool;
-#define false 0;
-#define true 1;
 
-#define ROUNDED_DIVISION(num, divisor) (((num) + (divisor / 2)) / divisor)
-
+void configure_pinmux(){
+*SYSMGR_I2C0USEFPGA = 0;
+*SYSMGR_GENERALIO7 = 1;
+*SYSMGR_GENERALIO8 = 1;
+}
 
 volatile uint32_t *i2c0_regs;
 
@@ -68,28 +67,8 @@ void close_and_unmap_dev_mem(int fd) {
     close_physical(fd);
 }
 
-#define I2C0_CON                0x00
-#define I2C0_TAR                0x04
-#define I2C0_DATA_CMD           0x10
-#define I2C0_FS_SCL_HCNT        0x1C
-#define I2C0_FS_SCL_LCNT        0x20
-#define I2C0_CLR_INTR           0x40
-#define I2C0_ENABLE             0x6C
-#define I2C0_TXFLR              0x74
-#define I2C0_RXFLR              0x78
-#define I2C0_ENABLE_STATUS      0x9C
-
-
-
-#define I2C0_SS_SCL_HCNT        0x14
-#define I2C0_SS_SCL_LCNT        0x28
-#define I2C0_INTR_MASK          0x30
-#define I2C0_TX_ABRT            0x54
-#define I2C0_TX_ABRT_SOURCE     0x80
-
 void write_register(volatile uint32_t *base, uint32_t offset, uint32_t value){
     base[offset / 4] = value;
-
 }
 
 uint32_t read_register(volatile uint32_t *base, uint32_t offset) {
@@ -129,7 +108,7 @@ bool test_communication() {
 void accel_init() {
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
     accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
-    accel_reg_write(THRESH_ACT,0x10); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+    accel_reg_write(THRESH_ACT,0x00); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
     accel_reg_write(INT_ENABLE,0x80 | 0x10); // Permitir detecção de Data_ready e Activity
     accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
@@ -181,7 +160,7 @@ void accel_calibrate(int average_index){
 
     offset_x += ROUNDED_DIVISION(0-average_x, 4);
     offset_y += ROUNDED_DIVISION(0-average_y, 4);
-    offset_z += ROUNDED_DIVISION(256-average_z, 4);
+    offset_z += ROUNDED_DIVISION(0-average_z, 4);
     
     accel_reg_write(OFSX,offset_x);
     accel_reg_write(OFSY,offset_y);
@@ -261,30 +240,5 @@ void accel_readXYZ(int16_t XYZ_Data[3]) {
     XYZ_Data[2] = (XYZ_8bits[5] << 8) | XYZ_8bits[4];
 
 }
-
-int main(){
-    int16_t value, XYZ_data[3];
-    printf(".");
-    int i = 0;
-    int fd = open_and_mmap_dev_mem();
-    if (fd == -1) {
-	    return -1;
-    }
-    I2C0_init();
-    accel_init();
-    accel_calibrate(32);
-    while (i < 100000)
-        {   
-            accel_readXYZ(XYZ_data);
-            printf("x: %d - y: %d - z: %d\n", XYZ_data[0], XYZ_data[1], XYZ_data[2]);
-	        i++;
-        }
-    close_and_unmap_dev_mem(fd);
-    return 0;
-}
-
-
-
-
 
 
