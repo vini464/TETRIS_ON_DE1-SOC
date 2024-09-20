@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <stdint.h>
-#include "accel_register_map.h"
-#include "accel.h"
+#include "../headers/accel_register_map.h"
+#include "../headers/accel.h"
 
 
 
@@ -108,8 +108,10 @@ bool test_communication() {
 void accel_init() {
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
     accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
-    accel_reg_write(THRESH_ACT,0x00); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+    accel_reg_write(THRESH_ACT,0x02); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
+    accel_reg_write(ACT_INACT_CTL, 0xFF);	//Enables AC coupling for thresholds
     accel_reg_write(INT_ENABLE,0x80 | 0x10); // Permitir detecção de Data_ready e Activity
+
     accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
     accel_reg_write(POWER_CTL,0x08); //Inicia a medição.
 }
@@ -239,6 +241,19 @@ void accel_readXYZ(int16_t XYZ_Data[3]) {
     XYZ_Data[1] = (XYZ_8bits[3] << 8) | XYZ_8bits[2];
     XYZ_Data[2] = (XYZ_8bits[5] << 8) | XYZ_8bits[4];
 
+}
+
+void get_direction(int *direcao){
+	if (accel_hadActivity()){
+		int16_t XYZ_Data[3];	
+		accel_readXYZ(XYZ_Data);
+		int16_t X_Data = XYZ_Data[0];
+		if (X_Data > 100)
+		*direcao = 1;
+		else if (X_Data < -100)
+		*direcao =  -1;
+		else 
+		*direcao = 0;}
 }
 
 

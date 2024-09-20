@@ -73,4 +73,5 @@ void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len);
 
 void accel_readXYZ(int16_t XYZ_Data[3]);
 
+void get_direction(int *direcao);
 #endif
