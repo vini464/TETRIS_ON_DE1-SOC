@@ -4,8 +4,6 @@
 #define BOARDHEIGHT  20
 #define BOARDWIDTH   10
 #define SQUARES      4
-#define FALSE        0
-#define TRUE         1
 
 typedef short int Color;
 typedef struct pair {
@@ -18,7 +16,10 @@ typedef struct piece {
   Color color;
 } Piece;
 
-typedef int bool;
+typedef enum boolean {
+  TRUE = 1,
+  FALSE = 0
+} boolean;
 
 
 typedef enum directions {
@@ -27,14 +28,13 @@ typedef enum directions {
   RIGHT = 3
 } directions;
 
-bool GAMEOVER = FALSE;
 
 
 /**
  * Esta função recebe a posição de um quadrado e verifica se alguma de suas coordenadas está fora
  * das dimensões da matriz ou se esta sobrepondo um quadrado já inserido na matriz
 **/
-bool checkCollision(Pair square_pos, int height, int width, Color board[height][width]);
+boolean checkCollision(Pair square_pos, int height, int width, Color board[height][width]);
 
 /**
  * Esta função recebe a posição de um quadrado e insere 1 nas suas coordenadas na matriz;
@@ -51,7 +51,7 @@ void deleteInBoard(Pair square_pos, int height, int width, Color board[height][w
  * ela tenha algum dos seus blocos em uma coordenada negativa (fora do quadro)
  * é considerado game over e a função retorna 1, caso contrário 0 é retornado.
 **/
-bool checkGameOver(Pair positions[SQUARES]);
+boolean checkGameOver(Pair positions[SQUARES]);
 
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo. Até que não seja possível mover nenhum quadrado separadamente

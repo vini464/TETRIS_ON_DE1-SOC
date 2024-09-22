@@ -1,9 +1,9 @@
 #include "../../headers/game.h"
 
-
+boolean GAMEOVER;
 void movePieceDown(Piece *piece, int height, int width, Color board[height][width]){
   int j;
-  bool collide;
+  boolean collide;
   for (j=0; j<SQUARES; j++){
     piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->actual_pos[j].first ++;
@@ -47,7 +47,7 @@ void insertInBoard(Pair square_pos, Color color, int height, int width, Color bo
 }
 
 
-bool checkCollision(Pair square_pos, int height, int width, Color board[height][width]){
+boolean checkCollision(Pair square_pos, int height, int width, Color board[height][width]){
   int j, k;
     if (square_pos.first >= height || square_pos.second < 0 || square_pos.second >= width || (square_pos.first >= 0 && board[square_pos.first][square_pos.second])) 
       return TRUE;
@@ -57,7 +57,7 @@ bool checkCollision(Pair square_pos, int height, int width, Color board[height][
 
 void movePiece(Piece *piece, int height, int width, Color board[height][width], directions direction){
   Piece new_pos = *piece;
-  bool collide;
+  boolean collide;
   
   switch (direction) {
     case LEFT: 
@@ -91,17 +91,24 @@ void movePiece(Piece *piece, int height, int width, Color board[height][width], 
     for (j=0; j<SQUARES; j++)
       insertInBoard(new_pos.older_pos[j], new_pos.color, height, width, board);
     if (collide && direction == DOWN){
-      checkGameOver(new_pos.actual_pos);
+      GAMEOVER = checkGameOver(new_pos.actual_pos);
     }
   }
   
 }
 
-bool checkGameOver(Pair position[SQUARES]) {
+boolean checkGameOver(Pair position[SQUARES]) {
   int j; 
   for (j=0; j<SQUARES; j++){
     Pair pos = position[j];
     if (pos.first < 0) return TRUE;
   }
   return FALSE;
+}
+
+boolean getGameOver(){
+  return GAMEOVER;
+}
+void setGameOver(boolean state){
+  GAMEOVER = state;
 }
