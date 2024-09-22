@@ -154,8 +154,8 @@ void accel_calibrate(int average_index){
             i++;
         }  
     }
-    average_x = ROUNDED_DIVISION(average_x,average_index); //Divide os valores de XYZ de forma que garanta o surgimento de um número inteiro
-    average_y = ROUNDED_DIVISION(average_y,average_index);
+    average_x = ROUNDED_DIVISION(average_x,average_index); //Divide os valores de XYZ de forma que garanta o surgimento
+    average_y = ROUNDED_DIVISION(average_y,average_index); //de um número inteiro e arredondado para cima.
     average_z = ROUNDED_DIVISION(average_z,average_index);
 
     accel_reg_write(POWER_CTL,0x00); //Volta para o modo Standby
