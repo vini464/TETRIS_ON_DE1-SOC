@@ -9,12 +9,13 @@ void movePieceDown(Piece *piece, int height, int width, Color board[height][widt
     piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->actual_pos[j].first ++;
     // gravity:
+    deleteInBoard(piece->older_pos[j], height, width, board);
     if (checkCollision(piece->actual_pos[j], height, width, board)){
       // volta para a posição anterior
       piece->actual_pos[j].first--;
       piece->older_pos[j].first--;
-
     }
+    insertInBoard(piece->actual_pos[j], piece->color, height, width, board);
   }
 }
 
