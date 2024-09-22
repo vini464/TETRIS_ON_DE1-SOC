@@ -71,9 +71,10 @@ void movePiece(Piece *piece, int height, int width, Color board[height][width], 
       break;
   }
   
-  deleteInBoard(new_pos.older_pos, height, width, board);
-
   int j;
+  for (j=0; j<SQUARES; j++)
+    deleteInBoard(new_pos.older_pos[j], height, width, board);
+
   for (j=0; j<SQUARES; j++){ // checa se ao menos um quadrado colidiu
 
     collide = checkCollision(new_pos.actual_pos[j], height, width, board);
@@ -81,12 +82,14 @@ void movePiece(Piece *piece, int height, int width, Color board[height][width], 
   }
 
   if (!collide){
-    insertInBoard(new_pos.actual_pos, new_pos.color, height, width, board);
+    for (j=0; j<SQUARES; j++)
+      insertInBoard(new_pos.actual_pos[j], new_pos.color, height, width, board);
     *piece = new_pos;
     return;
   }
   else{
-    insertInBoard(new_pos.older_pos, new_pos.color, height, width, board);
+    for (j=0; j<SQUARES; j++)
+      insertInBoard(new_pos.older_pos[j], new_pos.color, height, width, board);
     if (collide && direction == DOWN){
       checkGameOver(new_pos.actual_pos);
     }
