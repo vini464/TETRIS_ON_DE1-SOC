@@ -2,22 +2,25 @@
 
 int GAMEOVER = 0;
 
-void movePieceDown(Piece *piece){
+void movePieceDown(Piece *piece, int height, int width, Color board[height][width]){
   int j;
   bool collide;
   for (j=0; j<SQUARES; j++){
     piece->older_pos[j].first = piece->actual_pos[j].first;
-    piece->older_pos[j].second = piece->actual_pos[j].second;
     piece->actual_pos[j].first ++;
     // gravity:
-    collide = checkCollision(piece->actual_pos[j], int height, int width, Color (*board)[width])
+    if (checkCollision(piece->actual_pos[j], height, width, board)){
+      // volta para a posição anterior
+      piece->actual_pos[j].first--;
+      piece->older_pos[j].first--;
+
+    }
   }
 }
 
 void movePieceLeft(Piece *piece){
   int j;
   for (j=0; j<SQUARES; j++){
-    piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->older_pos[j].second = piece->actual_pos[j].second;
     piece->actual_pos[j].first--;
   }
@@ -26,30 +29,21 @@ void movePieceLeft(Piece *piece){
 void movePieceRight(Piece *piece){
   int j;
   for (j=0; j<SQUARES; j++){
-    piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->older_pos[j].second = piece->actual_pos[j].second;
     piece->actual_pos[j].second ++;
   }
 }
 
-void deleteInBoard(Pair positions[SQUARES], int height, int width, Color board[height][width]){
-  int j;
-  for (j = 0; j < SQUARES; j++){
-    Pair pos = positions[j];
-    if (pos.first >= 0 && pos.second >= 0){
-      board[pos.first][pos.second] = 0;
+void deleteInBoard(Pair square_pos, int height, int width, Color board[height][width]){
+    if (square_pos.first >= 0 && square_pos.second >= 0){
+      board[square_pos.first][square_pos.second] = 0;
     }
-  }
 }
 
-void insertInBoard(Pair positions[SQUARES], Color color, int height, int width, Color board[height][width]) {
-  int j;
-  for (j = 0; j < SQUARES; j++){
-    Pair pos = positions[j];
-    if (pos.first >= 0 && pos.second >= 0){
-      board[pos.first][pos.second] = color;
+void insertInBoard(Pair square_pos, Color color, int height, int width, Color board[height][width]) {
+    if (square_pos.first >= 0 && square_pos.second >= 0){
+      board[square_pos.first][square_pos.second] = 1;
     }
-  }
 }
 
 
@@ -73,12 +67,19 @@ void movePiece(Piece *piece, int height, int width, Color board[height][width], 
       movePieceRight(&new_pos);
       break;
     case DOWN:
-      movePieceDown(&new_pos);
+      movePieceDown(&new_pos, height, width, board);
       break;
   }
   
   deleteInBoard(new_pos.older_pos, height, width, board);
-  collide = checkCollision(new_pos.actual_pos, height, width, board);
+
+  int j;
+  for (j=0; j<SQUARES; j++){ // checa se ao menos um quadrado colidiu
+
+    collide = checkCollision(new_pos.actual_pos[j], height, width, board);
+    if (collide) break; 
+  }
+
   if (!collide){
     insertInBoard(new_pos.actual_pos, new_pos.color, height, width, board);
     *piece = new_pos;

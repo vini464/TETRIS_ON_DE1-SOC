@@ -35,14 +35,14 @@ typedef enum directions {
 bool checkCollision(Pair square_pos, int height, int width, Color board[height][width]);
 
 /**
- * Esta função recebe uma lista de posições e insere sua cor na matriz;
+ * Esta função recebe a posição de um quadrado e insere 1 nas suas coordenadas na matriz;
 **/
-void insertInBoard(Pair positions[SQUARES], Color color, int height, int width, Color board[height][width]);
+void insertInBoard(Pair square_pos, Color color, int height, int width, Color board[height][width]);
 
 /**
- * Esta função recebe uma lista de posições e insere suas coordenadas na matriz;
+ * Esta função recebe a posição de um quadrado e insere 0 nas suas coordenadas na matriz;
 **/
-void deleteInBoard(Pair positions[SQUARES], int height, int width, Color board[height][width]);
+void deleteInBoard(Pair square_pos, int height, int width, Color board[height][width]);
 
 /**
  * Esta função recebe as posições da peça que está sendo inserida na matriz, caso
@@ -52,9 +52,9 @@ void deleteInBoard(Pair positions[SQUARES], int height, int width, Color board[h
 int checkGameOver(Pair positions[SQUARES]);
 
 /**
- * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo.
+ * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo. Até que não seja possível mover nenhum quadrado separadamente
 **/
-void movePieceDown(Piece *piece);
+void movePieceDown(Piece *piece, int height, int width, Color board[height][width]);
 
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma coluna à esquerda.
