@@ -27,6 +27,8 @@ typedef enum directions {
   RIGHT = 3
 } directions;
 
+bool GAMEOVER = FALSE;
+
 
 /**
  * Esta função recebe a posição de um quadrado e verifica se alguma de suas coordenadas está fora
@@ -49,7 +51,7 @@ void deleteInBoard(Pair square_pos, int height, int width, Color board[height][w
  * ela tenha algum dos seus blocos em uma coordenada negativa (fora do quadro)
  * é considerado game over e a função retorna 1, caso contrário 0 é retornado.
 **/
-int checkGameOver(Pair positions[SQUARES]);
+bool checkGameOver(Pair positions[SQUARES]);
 
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo. Até que não seja possível mover nenhum quadrado separadamente

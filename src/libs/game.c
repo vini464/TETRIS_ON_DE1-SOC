@@ -1,6 +1,5 @@
-#include "../headers/game.h"
+#include "../../headers/game.h"
 
-int GAMEOVER = 0;
 
 void movePieceDown(Piece *piece, int height, int width, Color board[height][width]){
   int j;
@@ -96,4 +95,13 @@ void movePiece(Piece *piece, int height, int width, Color board[height][width], 
     }
   }
   
+}
+
+bool checkGameOver(Pair position[SQUARES]) {
+  int j; 
+  for (j=0; j<SQUARES; j++){
+    Pair pos = position[j];
+    if (pos.first < 0) return TRUE;
+  }
+  return FALSE;
 }
