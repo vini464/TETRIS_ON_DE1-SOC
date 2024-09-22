@@ -29,11 +29,10 @@ typedef enum directions {
 
 
 /**
- * Esta função recebe as posições de uma peça e verifica se alguma de suas coordenadas está fora
- * das dimensões da matriz ou se algum quadrado da posição atual esteja sobrepondo
- * um quadrado cuja as coordenadas não estejam no vetor de posições antigas da peça
+ * Esta função recebe a posição de um quadrado e verifica se alguma de suas coordenadas está fora
+ * das dimensões da matriz ou se esta sobrepondo um quadrado já inserido na matriz
 **/
-bool checkCollision(Pair positions[SQUARES], int height, int width, Color board[height][width]);
+bool checkCollision(Pair square_pos, int height, int width, Color board[height][width]);
 
 /**
  * Esta função recebe uma lista de posições e insere sua cor na matriz;

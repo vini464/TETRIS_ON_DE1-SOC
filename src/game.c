@@ -4,10 +4,13 @@ int GAMEOVER = 0;
 
 void movePieceDown(Piece *piece){
   int j;
+  bool collide;
   for (j=0; j<SQUARES; j++){
     piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->older_pos[j].second = piece->actual_pos[j].second;
     piece->actual_pos[j].first ++;
+    // gravity:
+    collide = checkCollision(piece->actual_pos[j], int height, int width, Color (*board)[width])
   }
 }
 
@@ -50,13 +53,10 @@ void insertInBoard(Pair positions[SQUARES], Color color, int height, int width, 
 }
 
 
-bool checkCollision(Pair positions[SQUARES], int height, int width, Color board[height][width]){
+bool checkCollision(Pair square_pos, int height, int width, Color board[height][width]){
   int j, k;
-  for (j = 0; j < SQUARES; j++){
-    Pair pos = positions[j];
-    if (pos.first >= height || pos.second < 0 || pos.second >= width || (pos.first >= 0 && board[pos.first][pos.second])) 
+    if (square_pos.first >= height || square_pos.second < 0 || square_pos.second >= width || (square_pos.first >= 0 && board[square_pos.first][square_pos.second])) 
       return TRUE;
-  }
   return FALSE;
 }
 
