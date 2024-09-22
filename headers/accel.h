@@ -53,25 +53,36 @@ void write_register(volatile uint32_t *base, uint32_t offset, uint32_t value);
 
 uint32_t read_register(volatile uint32_t *base, uint32_t offset);
 
+//Escreve no acelerometro
 void accel_reg_write(uint8_t address, uint8_t value);
 
+//Ler no acelerometro
 void accel_reg_read(uint8_t address, uint8_t *value);
 
+//Inicia a comunicação com o acelerometro via I2C
 void I2C0_init();
 
+//Testa a comunicação via leitura do DEVID
 bool test_communication();
 
+//Inicia e configura o acelerometro
 void accel_init();
 
+//Calibra os offsets do acelerometro
 void accel_calibrate(int average_index);
 
+//Checka se tem dados para leitura
 bool accel_isDataReady();
 
+//Checka se possui uma atividade que passe do limiar configurado em Thresh_act dentro do I2C_init
 bool accel_hadActivity();
 
+//Le os valores do acelerometro via I2C e coloca num array de 8bits
 void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len);
 
+//Faz a leitura dos valores de XYZ e coloca eles em 16 bits.
 void accel_readXYZ(int16_t XYZ_Data[3]);
 
+//Obtem a direção com base no valor de X
 void get_direction(int *direcao);
 #endif

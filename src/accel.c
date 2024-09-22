@@ -68,14 +68,18 @@ void close_and_unmap_dev_mem(int fd) {
 }
 
 void write_register(volatile uint32_t *base, uint32_t offset, uint32_t value){
+    // O endereço do registro é calculado somando o offset ao endereço base,
+    // e depois dividido por 4, pois cada registro é de 4 bytes (32 bits).
     base[offset / 4] = value;
 }
 
 uint32_t read_register(volatile uint32_t *base, uint32_t offset) {
+    // O endereço do registro é calculado somando o offset ao endereço base,
+    // e depois dividido por 4, pois cada registro é de 4 bytes (32 bits).
     return base[offset / 4];
 }
 
-
+//Inicia a comunicação com o acelerometro via I2C
 void I2C0_init(){
     write_register(i2c0_regs,I2C0_ENABLE, 0x02); //Aborta qualquer comunicação
     while ((read_register(i2c0_regs,I2C0_ENABLE_STATUS) & 0x1) == 1 )
@@ -86,9 +90,10 @@ void I2C0_init(){
     write_register(i2c0_regs,I2C0_FS_SCL_HCNT, 60+30);  //
     write_register(i2c0_regs,I2C0_FS_SCL_LCNT, 130+30); //
 
-    write_register(i2c0_regs,I2C0_ENABLE, 0x01);
+    write_register(i2c0_regs,I2C0_ENABLE, 0x01); // Volta a habilitar a comunicação
     while ((read_register(i2c0_regs,I2C0_ENABLE_STATUS) & 0x1) == 0 )
     {}
+    //Espera a comunicação ser estabelecida
 }
 
 bool test_communication() {
@@ -96,11 +101,8 @@ bool test_communication() {
     uint8_t device_id;
     accel_reg_read(DEVID, &device_id);
 
-    if (device_id == 0xE5){
-        //printf("Device ID: 0x%02X\n", device_id);
+    if (device_id == 0xE5){ // 0xE5 é o valor que deve estar em DEVID sempre!
         return true;
-        //levar para um
-        //printf("Comunicacao estabelecida!")
     }
     return false;
 }
@@ -109,7 +111,7 @@ void accel_init() {
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08); //Coloca o formato de dados em 0x03 (+-16g) e resolução completa
     accel_reg_write(BW_RATE, 0x0B); //Coloca o fluxo de saida de dados em 200Hz
     accel_reg_write(THRESH_ACT,0x02); // Calibra a detecção de movimento(62,5 mg por unidade em g (gravidade da Terra))
-    accel_reg_write(ACT_INACT_CTL, 0xFF);	//Enables AC coupling for thresholds
+    accel_reg_write(ACT_INACT_CTL, 0xFF);	//Termina de habilitar as interrupções por Threshold.
     accel_reg_write(INT_ENABLE,0x80 | 0x10); // Permitir detecção de Data_ready e Activity
 
     accel_reg_write(POWER_CTL,0x00); //Seta o power para 0, parando
@@ -126,53 +128,56 @@ void accel_calibrate(int average_index){
     int8_t offset_y;
     int8_t offset_z;
 
-    accel_reg_write(POWER_CTL,0x00);
+    accel_reg_write(POWER_CTL,0x00); // Coloca no modo de standby
     
-    accel_reg_read(OFSX,(uint8_t *)&offset_x);
+    accel_reg_read(OFSX,(uint8_t *)&offset_x); //Le os 3 offsets
     accel_reg_read(OFSY,(uint8_t *)&offset_y);
     accel_reg_read(OFSZ,(uint8_t *)&offset_z);
 
-    uint8_t saved_bw;
-    accel_reg_read(BW_RATE, &saved_bw);
+    uint8_t saved_bw; 
+    accel_reg_read(BW_RATE, &saved_bw); // Salva o bitrate antigo
     accel_reg_write(BW_RATE, 0x0a);
 
     uint8_t saved_dataF;
-    accel_reg_read(DATA_FORMAT, &saved_dataF);
+    accel_reg_read(DATA_FORMAT, &saved_dataF); // Salva o Data_format antigo
     accel_reg_write(DATA_FORMAT, 0x03 | 0x08);
 
-    accel_reg_write(POWER_CTL,0x08);
+    accel_reg_write(POWER_CTL,0x08); // Coloca no modo de medição
     int i = 0;
     while(i < average_index){
-        if (accel_isDataReady())
+        if (accel_isDataReady()) // Checka se tem um dado para ser lido
         {
-            accel_readXYZ(XYZ);
+            accel_readXYZ(XYZ); // Le e adiciona a uma media os valores de X,Y,Z
             average_x += XYZ[0];
             average_y += XYZ[1];
             average_z += XYZ[2];
             i++;
         }  
     }
-    average_x = ROUNDED_DIVISION(average_x,average_index);
+    average_x = ROUNDED_DIVISION(average_x,average_index); //Divide os valores de XYZ de forma que garanta o surgimento de um número inteiro
     average_y = ROUNDED_DIVISION(average_y,average_index);
     average_z = ROUNDED_DIVISION(average_z,average_index);
 
-    accel_reg_write(POWER_CTL,0x00);
+    accel_reg_write(POWER_CTL,0x00); //Volta para o modo Standby
 
     printf("Average X=%d, Y=%d, Z=%d\n", average_x, average_y, average_z);
 
-    offset_x += ROUNDED_DIVISION(0-average_x, 4);
+    // Ajusta o valor de offset_xyz aplicando uma correção baseada no valor médio de 'average_xyz'.
+    offset_x += ROUNDED_DIVISION(0-average_x, 4); //
     offset_y += ROUNDED_DIVISION(0-average_y, 4);
     offset_z += ROUNDED_DIVISION(0-average_z, 4);
     
-    accel_reg_write(OFSX,offset_x);
+    accel_reg_write(OFSX,offset_x); //Aplica os novos offsets
     accel_reg_write(OFSY,offset_y);
     accel_reg_write(OFSZ,offset_z);
 
+    //Volta a configuração para antes da calibração
     accel_reg_write(BW_RATE,saved_bw);
     accel_reg_write(DATA_FORMAT,saved_dataF);
     accel_reg_write(POWER_CTL,0x08);
 }
 
+//Checka se tem algum dado a ser lido
 bool accel_isDataReady(){
     bool bReady = false;
     uint8_t data8;
@@ -184,6 +189,7 @@ bool accel_isDataReady(){
     return bReady;
 }
 
+//Checka se houve uma movimentação acima do limiar configurado em Thresh_Act.
 bool accel_hadActivity(){
     bool bReady = false;
     uint8_t data8;
@@ -195,20 +201,23 @@ bool accel_hadActivity(){
     return bReady;
 }
 
+//Escreve no acelerometro
 void accel_reg_write(uint8_t address, uint8_t value){
     
-    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
-    write_register(i2c0_regs,I2C0_DATA_CMD, value);
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);//Manda um sinal de start
+    write_register(i2c0_regs,I2C0_DATA_CMD, value); //Faz a escrita
 }
 
+//Ler no acelerometro
 void accel_reg_read(uint8_t address, uint8_t *value){
-    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400);
-    write_register(i2c0_regs,I2C0_DATA_CMD, 0x100);
-    while (read_register(i2c0_regs,I2C0_RXFLR) == 0)
+    write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400); //Manda um sinal de start
+    write_register(i2c0_regs,I2C0_DATA_CMD, 0x100); //Manda um pedido de leitura
+    while (read_register(i2c0_regs,I2C0_RXFLR) == 0) //Checka o buffer esperando colocar um valor para leitura
     {}
-    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD);
+    *value = (uint8_t)read_register(i2c0_regs,I2C0_DATA_CMD); //Faz a leitura e armazena em value
 }
 
+//Le os valores do acelerometro via I2C e coloca num array de 8bits
 void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len){
 
     write_register(i2c0_regs,I2C0_DATA_CMD, address + 0x400); //Envia um sinal de start para o primeiro registrador
@@ -220,7 +229,7 @@ void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len){
     }
     int byte_index = 0; //Cria uma variavel para percorrer o array guardado no buffer do I2C
 
-    while (read_register(i2c0_regs,I2C0_RXFLR) < len){}
+    while (read_register(i2c0_regs,I2C0_RXFLR) < len){} //Espera tudo ser lido e colocado no buffer
 
     while (len)
     {
@@ -232,7 +241,7 @@ void I2C_readXYZ(uint8_t address,uint8_t values[],uint8_t len){
         }
     }
 }
-
+//Faz a leitura dos valores de XYZ e coloca eles em 16 bits.
 void accel_readXYZ(int16_t XYZ_Data[3]) {
     uint8_t XYZ_8bits[6];
     I2C_readXYZ(DATA_X0, (uint8_t *)&XYZ_8bits, 6);
@@ -242,7 +251,7 @@ void accel_readXYZ(int16_t XYZ_Data[3]) {
     XYZ_Data[2] = (XYZ_8bits[5] << 8) | XYZ_8bits[4];
 
 }
-
+//Obtem a direção com base no valor de X
 void get_direction(int *direcao){
 	if (accel_hadActivity()){
 		int16_t XYZ_Data[3];	
