@@ -51,7 +51,7 @@ void deleteInBoard(Pair square_pos, int height, int width, Color board[height][w
  * ela tenha algum dos seus blocos em uma coordenada negativa (fora do quadro)
  * é considerado game over e a função retorna 1, caso contrário 0 é retornado.
 **/
-boolean checkGameOver(Pair positions[SQUARES]);
+void checkGameOver(Pair positions[SQUARES], boolean *gameover);
 
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo. Até que não seja possível mover nenhum quadrado separadamente
@@ -74,6 +74,7 @@ void movePieceRight(Piece *piece);
  * colidiu, caso tenha, ela insere novamente a posição antiga e não atualiza a peça  - se a direção for para baixo ela chega se deu GAME OVER -
  * caso não tenha colidido ela insere a posição atual na matriz e autaliza a peça
 **/
-void movePiece(Piece *piece, int height, int width, Color board[height][width], directions direction);
+boolean movePiece(Piece *piece, int height, int width, Color board[height][width], directions direction, boolean *gameover);
+
 
 #endif // !GAME_H
