@@ -1,7 +1,9 @@
 #include "../../headers/inputListener.h"
+#include <ios>
 
-int button = 0;
-extern int FINISH;
+int fd, button = 0;
+directions direction = STOP;
+extern int LISTEN_BTN, LISTEN_ACCEL;
 void startButtonListener() {
   int success, t;
   for (t = 0; t < 10; t++) {
@@ -18,7 +20,7 @@ void startButtonListener() {
 
 void *buttonListener(void* arg) {
   int btn = 0;
-  while (!FINISH) {
+  while (LISTEN_BTN) {
     KEY_read(&btn);
     switch (btn) {
     case 0b0001:
@@ -42,5 +44,36 @@ void stopButtonListener(){
   KEY_close();
 }
 
-void startAccelListener();
-void accelListener(void *direction);
+void startAccelListener(){
+  int  i;
+  for (i = 0; i < 10; i++){
+    fd = open_and_mmap_dev_mem();
+    if (fd == -1) printf("não foi possível abrir /dev/mem\n");
+    else break;
+  }
+  
+  if (fd == -1) exit(-1);
+  I2C0_init();
+  accel_init();
+  accel_calibrate(128);
+
+}
+void *accelListener(void * arg){
+  int dir = 0;
+  while (LISTEN_ACCEL) {
+    get_direction(&dir);
+    switch (dir) {
+    case -1:
+      direction = LEFT; 
+      break;
+    case 1:
+      direction = RIGHT; 
+      break;
+    default:
+      direction = STOP;
+    }
+  }
+}
+void stopAccelListener(){
+      close_and_unmap_dev_mem(fd);
+}
