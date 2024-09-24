@@ -7,8 +7,8 @@ Color board[BOARDHEIGHT][BOARDWIDTH];
 
 boolean finish = FALSE;
 const Piece BAR = {.color = 0xFFFF,
-                   .actual_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-1, 6}},
-                   .older_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-1, 6}}};
+                   .actual_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-2, 5}},
+                   .older_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-2, 5}}};
 void sm();
 int main(void) {
   int j, k;
@@ -25,11 +25,10 @@ int main(void) {
     while (!collide && !finish) {
       sm();
       collide = movePiece(&bar, BOARDHEIGHT, BOARDWIDTH, board, DOWN, &finish);
- //     if (!collide) collide = movePiece(&bar, BOARDHEIGHT, BOARDWIDTH, board, LEFT, &finish);
-      if (!collide) collide = movePiece(&bar, BOARDHEIGHT, BOARDWIDTH, board, RIGHT, &finish);
       usleep(50000);
       system("clear");
     }
+    gravity(BOARDHEIGHT, BOARDWIDTH, board);
   }
 
   return 0;

@@ -56,7 +56,7 @@ void checkGameOver(Pair positions[SQUARES], boolean *gameover);
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma linha abaixo. Até que não seja possível mover nenhum quadrado separadamente
 **/
-void movePieceDown(Piece *piece, int height, int width, Color board[height][width]);
+void movePieceDown(Piece *piece);
 
 /**
  * Esta função recebe uma peça e atualiza suas coordenadas uma coluna à esquerda.
@@ -76,5 +76,9 @@ void movePieceRight(Piece *piece);
 **/
 boolean movePiece(Piece *piece, int height, int width, Color board[height][width], directions direction, boolean *gameover);
 
+/**
+ * Essa função percorre todas as colunas verificando se existem blocos acima de lugares vazios e "derruba" esses blocos;
+**/
+void gravity(int height, int width, Color board[height][width]);
 
 #endif // !GAME_H

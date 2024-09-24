@@ -7,3 +7,6 @@ source_libs:
 game_test: source_libs
 	gcc ./src/main.c -I./headers ./obj/*.o -o run
 	./run
+
+clear_objects:
+	rm ./obj/*.o

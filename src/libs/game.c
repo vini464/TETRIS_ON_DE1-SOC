@@ -1,24 +1,14 @@
 #include "../../headers/game.h"
 #include <stdio.h>
 
-void movePieceDown(Piece *piece, int height, int width,
-                   Color board[height][width]) {
+void movePieceDown(Piece *piece) {
   int j;
   boolean collide;
   for (j = 0; j < SQUARES; j++) {
     piece->older_pos[j].first = piece->actual_pos[j].first;
     piece->older_pos[j].second = piece->actual_pos[j].second;
     piece->actual_pos[j].first++;
-    // gravity:
-/**    deleteInBoard(piece->older_pos[j], height, width, board);
-    if (checkCollision(piece->actual_pos[j], height, width, board)) {
-      // volta para a posição anterior
-      piece->actual_pos[j].first--;
-      piece->older_pos[j].first--;
-      printf("----\n");
-    }
-    insertInBoard(piece->actual_pos[j], piece->color, height, width, board);
-  **/}
+   }
 }
 
 void movePieceLeft(Piece *piece) {
@@ -76,7 +66,7 @@ boolean movePiece(Piece *piece, int height, int width, Color board[height][width
     movePieceRight(&new_pos);
     break;
   case DOWN:
-    movePieceDown(&new_pos, height, width, board);
+    movePieceDown(&new_pos);
     break;
   }
 
@@ -124,4 +114,20 @@ void checkGameOver(Pair position[SQUARES], boolean *gameover) {
     }
   }
   *gameover = FALSE;
+}
+
+void gravity(int height, int width, Color board[height][width]){
+  int k, j, aux;
+  Color color;
+  for (k = 0; k<width; k++){
+    for (j = height-1; j >= 0; j--){
+      if (board[j][k] > 0) {
+        color = board[j][k];
+        board[j][k] = 0;
+        aux = j+1;
+        while (aux < height && board[aux][k] == 0) aux++;
+        board[aux-1][k] = color;
+      }
+    }
+  }
 }
