@@ -5,7 +5,7 @@ source_libs:
 	mv *.o ./obj
 
 game_test: source_libs
-	gcc ./src/main.c -I./headers ./obj/*.o -o run
+	gcc ./src/main.c -I./headers ./obj/*.o -o run -lpthread
 	./run
 
 clear_objects:
