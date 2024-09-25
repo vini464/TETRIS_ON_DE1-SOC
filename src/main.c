@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 
@@ -30,12 +31,10 @@ directions direction;
 int LISTEN_BTN, LISTEN_ACCEL;
 
 boolean FINISH = FALSE;
-const Piece BAR = {.color = video_BLUE,
-                   .actual_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-2, 5}},
-                   .older_pos = {{-1, 3}, {-1, 4}, {-1, 5}, {-2, 5}}};
-Piece ACTUAL_PIECE;
+Piece ACTUAL_PIECE, NEXT_PIECE;
 
 int main(void) {
+  srand(time(NULL));
   LISTEN_BTN = 0; LISTEN_ACCEL = 0;
   int j, k;
   for (j = 0; j < BOARDHEIGHT; j++) {
@@ -55,8 +54,8 @@ int main(void) {
   LISTEN_BTN = LISTEN_ACCEL = 1;
   while (FINISH == FALSE) {
     collide = FALSE;
-    ACTUAL_PIECE = BAR;
-    ACTUAL_PIECE.color = BAR.color;
+    ACTUAL_PIECE = pieces[rand() % 17];
+    ACTUAL_PIECE.color = colors[rand() % 9];
     while (!collide) {
       if (button == 1){
         paused = paused ? 0 : 1;
@@ -178,7 +177,7 @@ void *accelListener(void * arg){
     default:
       direction = STOP;
     }
-    if (direction != STOP)
+    if (direction != STOP && !paused)
       movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, board, direction, &FINISH);
     direction = STOP;
     usleep(200000);
@@ -220,6 +219,7 @@ void showMatrix(int height, int width, Color matrix[height][width]) {
   int l_off = (tlines-p1.first+(offset*20)+(19*2))/2;
   // draw a rect:
   video_clear();
+  video_erase();
   video_box(p1.second, p1.first, p1.second+(offset*10)+(9*2), p1.first+(offset*20)+(19*2), 0xFFFF);
 
   // desenhando as peças:
