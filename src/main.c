@@ -54,8 +54,8 @@ int main(void) {
   LISTEN_BTN = LISTEN_ACCEL = 1;
   while (FINISH == FALSE) {
     collide = FALSE;
-    ACTUAL_PIECE = pieces[rand() % 17];
-    ACTUAL_PIECE.color = colors[rand() % 9];
+    ACTUAL_PIECE = getPiece(rand()%17);
+    ACTUAL_PIECE.color = getColor(rand() % 9);
     while (!collide) {
       if (button == 1){
         paused = paused ? 0 : 1;
