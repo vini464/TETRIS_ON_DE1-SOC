@@ -5,7 +5,7 @@
 #define BOARDWIDTH   10
 #define SQUARES      4
 
-typedef short int Color;
+typedef unsigned short int Color;
 typedef struct pair {
   int first;
   int second;

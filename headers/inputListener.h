@@ -1,7 +1,7 @@
 #ifndef INPUT_LISTENER_H
 #define INPUT_LISTENER_H
 
-#include <intelfpgaup/KEYS.h>
+#include <intelfpgaup/KEY.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "accel.h"

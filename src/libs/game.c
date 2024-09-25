@@ -39,7 +39,7 @@ void deleteInBoard(Pair square_pos, int height, int width,
 void insertInBoard(Pair square_pos, Color color, int height, int width,
                    Color board[height][width]) {
   if (square_pos.first >= 0 && square_pos.second >= 0) {
-    board[square_pos.first][square_pos.second] = 1;
+    board[square_pos.first][square_pos.second] = color;
   }
 }
 
@@ -58,6 +58,7 @@ boolean movePiece(Piece *piece, int height, int width, Color board[height][width
   Piece new_pos = *piece;
   boolean collide = FALSE;
 
+
   switch (direction) {
   case LEFT:
     movePieceLeft(&new_pos);
@@ -71,6 +72,8 @@ boolean movePiece(Piece *piece, int height, int width, Color board[height][width
   }
 
   int j;
+  
+
   /** debugging
   printf("\n---%s---\n", direction == DOWN ? "down" : "right");
   for (j = 0; j < SQUARES; j++){
@@ -89,13 +92,16 @@ boolean movePiece(Piece *piece, int height, int width, Color board[height][width
   }
 
   if (!collide) {
-    for (j = 0; j < SQUARES; j++)
+    for (j = 0; j < SQUARES; j++){
       insertInBoard(new_pos.actual_pos[j], new_pos.color, height, width, board);
+    }
     *piece = new_pos;
     return FALSE;
   } else {
-    for (j = 0; j < SQUARES; j++)
+    for (j = 0; j < SQUARES; j++){
       insertInBoard(new_pos.older_pos[j], new_pos.color, height, width, board);
+
+    }
     if (collide && direction == DOWN) {
       checkGameOver(new_pos.older_pos, gameover);
       return TRUE;

@@ -153,13 +153,12 @@ void accel_calibrate(int average_index){
 
     accel_reg_write(POWER_CTL,0x00); //Volta para o modo Standby
 
-    printf("Average X=%d, Y=%d, Z=%d\n", average_x, average_y, average_z);
+    //printf("Average X=%d, Y=%d, Z=%d\n", average_x, average_y, average_z);
 
     // Ajusta o valor de offset_xyz aplicando uma correção baseada no valor médio de 'average_xyz'.
     offset_x += ROUNDED_DIVISION(0-average_x, 4); //
     offset_y += ROUNDED_DIVISION(0-average_y, 4);
     offset_z += ROUNDED_DIVISION(0-average_z, 4);
-    
     accel_reg_write(OFSX,offset_x); //Aplica os novos offsets
     accel_reg_write(OFSY,offset_y);
     accel_reg_write(OFSZ,offset_z);
@@ -250,9 +249,10 @@ void get_direction(int *direcao){
 		int16_t XYZ_Data[3];	
 		accel_readXYZ(XYZ_Data);
 		int16_t X_Data = XYZ_Data[0];
-		if (X_Data > 100)
+
+		if (X_Data > 40)
 		*direcao = 1;
-		else if (X_Data < -100)
+		else if (X_Data < -40)
 		*direcao =  -1;
 		else 
 		*direcao = 0;}

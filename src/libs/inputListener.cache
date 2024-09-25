@@ -1,5 +1,5 @@
 #include "../../headers/inputListener.h"
-#include <ios>
+
 
 int fd, button = 0;
 directions direction = STOP;
@@ -55,23 +55,27 @@ void startAccelListener(){
   if (fd == -1) exit(-1);
   I2C0_init();
   accel_init();
-  accel_calibrate(128);
+  accel_calibrate(60);
 
 }
 void *accelListener(void * arg){
   int dir = 0;
   while (LISTEN_ACCEL) {
     get_direction(&dir);
+    //printf("-%d\n", dir);
     switch (dir) {
     case -1:
+      printf("esquerda");
       direction = LEFT; 
       break;
     case 1:
+      printf("direita");
       direction = RIGHT; 
       break;
     default:
       direction = STOP;
     }
+    usleep(1000);
   }
 }
 void stopAccelListener(){
