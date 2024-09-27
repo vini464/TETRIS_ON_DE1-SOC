@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "../headers/accel.h"
+#include "../headers/rendering.h"
 #include "../headers/utils.h"
 #include <intelfpgaup/HEX.h>
 #include <intelfpgaup/KEY.h>
@@ -21,9 +22,12 @@ void stopAccelListener();
 int points();
 
 void sm();
-void showMatrix(int height, int width, Color matrix[height][width]);
+// void showMatrix(int height, int width, Color matrix[height][width]);
+void hex_handler(int pts);
+
+void game();
 Color board[BOARDHEIGHT][BOARDWIDTH];
-int button, paused = 0;
+int BUTTON, PAUSED = 0, START = 0;
 directions direction;
 int LISTEN_BTN, LISTEN_ACCEL;
 
@@ -46,23 +50,55 @@ int main(void) {
   pthread_t btns, accel;
   startAccelListener();
   startButtonListener();
+  video_open();
   pthread_create(&btns, NULL, buttonListener, NULL);
   pthread_create(&accel, NULL, accelListener, NULL);
-  int pts = 0;
   LISTEN_BTN = LISTEN_ACCEL = 1;
+  while (1) {
+    showTitle();
+    while (!START) {
+      if (BUTTON == 2) {
+        START = 1;
+        BUTTON = 0;
+        printf(".");
+      }
+    }
+        printf(".");
+    game();
+    START = 0;
+    FINISH = FALSE;
+  }
+  LISTEN_ACCEL = 0;
+  LISTEN_BTN = 0;
+
+  pthread_exit(NULL);
+  stopAccelListener();
+  stopButtonListener();
+  return 0;
+}
+
+void game() {
+  int j, k;
+  int pts = 0;
+    hex_handler(pts);
+  for (j = 0; j < BOARDHEIGHT; j++) {
+    for (k = 0; k < BOARDWIDTH; k++)
+      board[j][k] = 0;
+  }
+  int collide;
   while (FINISH == FALSE) {
     collide = FALSE;
     ACTUAL_PIECE = getPiece(rand() % 17);
     ACTUAL_PIECE.color = getColor(rand() % 9);
     while (!collide) {
-      if (button == 1) {
-        paused = paused ? 0 : 1;
-        button = 0;
+      if (BUTTON == 1) {
+        PAUSED = PAUSED ? 0 : 1;
+        BUTTON = 0;
       }
-      while (paused) {
-        if (button == 1) {
-          paused = paused ? 0 : 1;
-          button = 0;
+      while (PAUSED) {
+        if (BUTTON == 1) {
+          PAUSED = PAUSED ? 0 : 1;
+          BUTTON = 0;
         }
       }
       collide = movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, board, DOWN,
@@ -75,16 +111,8 @@ int main(void) {
     pts += points();
     hex_handler(pts);
   }
-  LISTEN_ACCEL = 0;
-  LISTEN_BTN = 0;
-  printf("points: %d\n", pts);
-
-  pthread_exit(NULL);
-  stopAccelListener();
-  stopButtonListener();
-  return 0;
 }
-
+/**
 void sm() {
 
   int j, k;
@@ -99,8 +127,8 @@ void sm() {
     printf("\n");
   }
 }
-
-int fd, button = 0;
+**/
+int fd;
 void startButtonListener() {
   int success, t;
   for (t = 0; t < 10; t++) {
@@ -113,26 +141,28 @@ void startButtonListener() {
   }
   if (!success)
     exit(-1);
+  KEY_read(&t);
 }
 
 void *buttonListener(void *arg) {
   printf("lendo botao");
+  int btn = 0, t;
   while (LISTEN_BTN) {
-    int btn = 0;
+    // while (BUTTON == 0) {
+    printf("BUTTON: %d\n", BUTTON);
     KEY_read(&btn);
-    switch (btn) {
-    case 0b0001:
-      button = 1;
-      break;
-    case 0b0010:
-      button = 2;
-      break;
-    case 0b0100:
-      button = 3;
-      break;
-    case 0b1000:
-      button = 4;
-      break;
+    if (btn & 0b0001) {
+      BUTTON = 1;
+      printf("BUTTON: %d\n", BUTTON);
+    } else if (btn & 0b0010) {
+      BUTTON = 2;
+      printf("BUTTON: %d\n", BUTTON);
+    } else if (btn & 0b0100) {
+      BUTTON = 3;
+      printf("BUTTON: %d\n", BUTTON);
+    } else if (btn & 0b1000) {
+      BUTTON = 4;
+      printf("BUTTON: %d\n", BUTTON);
     }
   }
 }
@@ -169,7 +199,7 @@ void *accelListener(void *arg) {
     default:
       direction = STOP;
     }
-    if (direction != STOP && !paused)
+    if (direction != STOP && !PAUSED)
       movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, board, direction,
                 &FINISH);
     direction = STOP;
@@ -191,45 +221,11 @@ int points() {
     pts += 10 + combo * combo;
     combo++;
     gravity(BOARDHEIGHT, BOARDWIDTH, board);
-    showMatrix(BOARDHEIGHT, BOARDWIDTH, board);
   }
   return 10;
 }
 
 short colors[] = {video_GREEN, video_YELLOW, video_RED, video_BLUE, video_PINK};
-void showMatrix(int height, int width, Color matrix[height][width]) {
-  int lines, cols, tlines, tcols, mid, offset;
-  Pair p1;
-  // preparando a tela
-  video_open();
-  video_read(&lines, &cols, &tlines, &tcols);
-  mid = cols / 2;
-  p1.first = 25;
-  p1.second = mid - 9;
-  offset = 7;
-  int l_off = (tlines - p1.first + (offset * 20) + (19 * 2)) / 2;
-  // draw a rect:
-  video_clear();
-  video_erase();
-  video_box(p1.second, p1.first, p1.second + (offset * 10) + (9 * 2),
-            p1.first + (offset * 20) + (19 * 2), 0xFFFF);
-
-  // desenhando as peças:
-  int l, c;
-  for (l = 0; l < height; l++) {
-    p1.second = mid - 9;
-    for (c = 0; c < width; c++) {
-      if (matrix[l][c] > 0) {
-        // printf("has_block\ncolor: %d\n", matrix[l][c]);
-        video_box(p1.second, p1.first, p1.second + offset, p1.first + offset,
-                  matrix[l][c]);
-      }
-      p1.second += offset + 2;
-    }
-    p1.first += offset + 2;
-  }
-  video_show();
-}
 
 void hex_handler(int pts) {
   HEX_open();

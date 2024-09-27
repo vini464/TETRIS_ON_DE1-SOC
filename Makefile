@@ -1,7 +1,7 @@
 
 
 source_libs: 
-	gcc -c ./src/libs/*.c
+	gcc -c ./src/libs/*.c 
 	mv *.o ./obj
 
 game_test: source_libs

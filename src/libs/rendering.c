@@ -1,5 +1,5 @@
 #include "../../headers/rendering.h"
-#include <intelfgaup/video.h>
+#include <intelfpgaup/video.h>
 
 void showTitle(){
   int lines, cols, tlines, tcols, mid, offset;
@@ -13,10 +13,12 @@ void showTitle(){
   int l_off = (tlines - p1.first + (offset * 20) + (19 * 2)) / 2;
   // draw a rect:
   video_clear();
+  video_show();
+  video_clear();
   video_erase();
   video_box(p1.second, p1.first, p1.second + (offset * 10) + (9 * 2),
             p1.first + (offset * 20) + (19 * 2), 0xFFFF);
-  video_text(tcols/2, tlines/2, "Aperte o botão um para continuar");
+  video_text(tcols/2, tlines/2, "Aperte o botao um para jogar");
 }
 void showGameOver(){}
 void showMenu(int argc, char *argv[]){}

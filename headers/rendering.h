@@ -3,9 +3,10 @@
 
 #include "utils.h"
 
-void showTitle(int option);
+void showTitle();
 void showGameOver();
 void showMenu(int argc, char *argv[]);
+void showMatrix(int height, int width, Color matrix[height][width]);
 
 
 #endif // !REDENRING_H
