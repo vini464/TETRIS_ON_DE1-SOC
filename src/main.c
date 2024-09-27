@@ -22,55 +22,76 @@ void stopAccelListener();
 int points();
 
 void sm();
-// void showMatrix(int height, int width, Color matrix[height][width]);
 void hex_handler(int pts);
 
 void game();
-Color board[BOARDHEIGHT][BOARDWIDTH];
-int BUTTON, PAUSED = 0, START = 0;
-directions direction;
-int LISTEN_BTN, LISTEN_ACCEL;
 
-boolean FINISH = FALSE;
+Color board[BOARDHEIGHT][BOARDWIDTH];
+Direction direction;
+int LISTEN_BTN, LISTEN_ACCEL, BUTTON, PAUSED = 0, START = 0, FD, square_size,
+                                      d_width_center, t_width_center, pts, OUT = 0;
+boolean FINISH = TRUE;
 Piece ACTUAL_PIECE, NEXT_PIECE;
 
 int main(void) {
-  srand(time(NULL));
+  srand(time(NULL)); // Definir uma seed "aleatória" para o rand
   LISTEN_BTN = 0;
   LISTEN_ACCEL = 0;
-  int j, k;
-  for (j = 0; j < BOARDHEIGHT; j++) {
-    for (k = 0; k < BOARDWIDTH; k++) {
-      board[j][k] = 0;
-    }
-  }
   int d;
   boolean collide = FALSE;
-  directions dir;
+  Direction dir;
   pthread_t btns, accel;
   startAccelListener();
   startButtonListener();
-  video_open();
+  initScreen(&square_size, &d_width_center, &t_width_center);
+  LISTEN_BTN = LISTEN_ACCEL = 1;
   pthread_create(&btns, NULL, buttonListener, NULL);
   pthread_create(&accel, NULL, accelListener, NULL);
-  LISTEN_BTN = LISTEN_ACCEL = 1;
+  int reset = 0;
   while (1) {
-    showTitle();
+    initialScreen(d_width_center);
+
     while (!START) {
-      if (BUTTON == 2) {
+      if (BUTTON != 0) {
         START = 1;
         BUTTON = 0;
-        printf(".");
       }
     }
-        printf(".");
+    clearVideo();
     game();
-    START = 0;
-    FINISH = FALSE;
+    usleep(1000);
+    if (FINISH){
+	    showGameOver();
+	    BUTTON = 0;
+	    START = 1;
+	    while (BUTTON == 0) {
+		printf("..\n");
+		    if (BUTTON == 1) {
+			    reset = 0;
+		    }
+		    else if (BUTTON > 1) {
+			    reset = 1;
+			    hex_handler(0);
+		    }
+	    }
+	    BUTTON = 0;
+	    if (!reset) break; 
+    }
+   else {
+if (OUT) break;
+	   BUTTON = 0;
+	   START = 1;
+	   hex_handler(0);
+	   FINISH = FALSE;
+
+   }
   }
   LISTEN_ACCEL = 0;
   LISTEN_BTN = 0;
-
+  clearVideo();
+  HEX_open();
+  HEX_raw(0b0, 0b0);
+  HEX_close();
   pthread_exit(NULL);
   stopAccelListener();
   stopButtonListener();
@@ -79,8 +100,9 @@ int main(void) {
 
 void game() {
   int j, k;
-  int pts = 0;
-    hex_handler(pts);
+  pts = 0;
+  hex_handler(pts);
+  FINISH = FALSE;
   for (j = 0; j < BOARDHEIGHT; j++) {
     for (k = 0; k < BOARDWIDTH; k++)
       board[j][k] = 0;
@@ -100,10 +122,13 @@ void game() {
           PAUSED = PAUSED ? 0 : 1;
           BUTTON = 0;
         }
+   	if (BUTTON == 2) { BUTTON = 0;PAUSED = 0; return;}
+        if (BUTTON == 3) {BUTTON = 0; PAUSED =0; OUT=1; return;}
       }
       collide = movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, board, DOWN,
                           &FINISH);
-      showMatrix(BOARDHEIGHT, BOARDWIDTH, board);
+     
+      showMatrix(BOARDHEIGHT, BOARDWIDTH, board, pts, PAUSED, d_width_center);
 
       usleep(200000);
     }
@@ -112,23 +137,7 @@ void game() {
     hex_handler(pts);
   }
 }
-/**
-void sm() {
 
-  int j, k;
-  system("clear");
-
-  for (j = 0; j < BOARDHEIGHT; j++) {
-    for (k = 0; k < BOARDWIDTH; k++) {
-      // if (board[j][k] > 0) printf("[]");
-      // else printf("  ");
-      printf("%d  ", board[j][k]);
-    }
-    printf("\n");
-  }
-}
-**/
-int fd;
 void startButtonListener() {
   int success, t;
   for (t = 0; t < 10; t++) {
@@ -171,14 +180,14 @@ void stopButtonListener() { KEY_close(); }
 void startAccelListener() {
   int i;
   for (i = 0; i < 10; i++) {
-    fd = open_and_mmap_dev_mem();
-    if (fd == -1)
+    FD = open_and_mmap_dev_mem();
+    if (FD == -1)
       printf("não foi possível abrir /dev/mem\n");
     else
       break;
   }
 
-  if (fd == -1)
+  if (FD == -1)
     exit(-1);
   I2C0_init();
   accel_init();
@@ -199,14 +208,17 @@ void *accelListener(void *arg) {
     default:
       direction = STOP;
     }
-    if (direction != STOP && !PAUSED)
+    if (direction != STOP && !PAUSED && !FINISH) {
+
       movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, board, direction,
                 &FINISH);
+      showMatrix(BOARDHEIGHT, BOARDWIDTH, board, pts, PAUSED, d_width_center);
+    }
     direction = STOP;
     usleep(200000);
   }
 }
-void stopAccelListener() { close_and_unmap_dev_mem(fd); }
+void stopAccelListener() { close_and_unmap_dev_mem(FD); }
 
 int points() {
   int j, pts = 0, combo = 0;
@@ -224,8 +236,6 @@ int points() {
   }
   return 10;
 }
-
-short colors[] = {video_GREEN, video_YELLOW, video_RED, video_BLUE, video_PINK};
 
 void hex_handler(int pts) {
   HEX_open();

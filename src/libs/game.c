@@ -54,7 +54,7 @@ boolean checkCollision(Pair square_pos, int height, int width,
 }
 
 boolean movePiece(Piece *piece, int height, int width, Color board[height][width],
-               directions direction, boolean *gameover) {
+               Direction direction, boolean *gameover) {
   Piece new_pos = *piece;
   boolean collide = FALSE;
 

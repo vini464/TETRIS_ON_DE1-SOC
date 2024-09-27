@@ -48,7 +48,7 @@ void movePieceRight(Piece *piece);
  * colidiu, caso tenha, ela insere novamente a posição antiga e não atualiza a peça  - se a direção for para baixo ela chega se deu GAME OVER -
  * caso não tenha colidido ela insere a posição atual na matriz e autaliza a peça
 **/
-boolean movePiece(Piece *piece, int height, int width, Color board[height][width], directions direction, boolean *gameover);
+boolean movePiece(Piece *piece, int height, int width, Color board[height][width], Direction direction, boolean *gameover);
 
 /**
  * Essa função percorre todas as colunas verificando se existem blocos acima de lugares vazios e "derruba" esses blocos;

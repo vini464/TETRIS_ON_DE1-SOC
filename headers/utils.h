@@ -18,7 +18,7 @@ typedef struct piece {
 
 typedef enum boolean { TRUE = 1, FALSE = 0 } boolean;
 
-typedef enum directions { STOP = 0, LEFT = 1, DOWN = 2, RIGHT = 3 } directions;
+typedef enum directions { STOP = 0, LEFT = 1, DOWN = 2, RIGHT = 3 } Direction;
 
 Color getColor(int index);
 Piece getPiece(int index);
