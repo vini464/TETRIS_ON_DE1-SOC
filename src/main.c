@@ -171,8 +171,7 @@ void *accelListener(void *arg) {
     }
     if (dir != STOP && !PAUSED && !GAMEOVER) {
 
-      movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, BOARD, dir,
-                &GAMEOVER);
+      movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, BOARD, dir, &GAMEOVER);
       showMatrix(BOARDHEIGHT, BOARDWIDTH, BOARD, PAUSED, WIDTH_CENTER);
     }
     dir = STOP;
