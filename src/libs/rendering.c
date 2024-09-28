@@ -11,7 +11,6 @@ void initScreen(int *qnt_size, int *d_width_center, int *t_width_center) {
   *qnt_size = cols / 5;
   *t_width_center = tcols/2;
   *d_width_center = cols/2;
-  printf("tcols: %d\n", tcols);
   
 }
 
@@ -33,30 +32,30 @@ void showMatrix(int height, int width, Color matrix[height][width], int points, 
   Pair p1;
   // preparando a tela
   video_read(&lines, &cols, &tlines, &tcols);
-  int initial_point = width_center - ((4 * BOARDWIDTH) + 2)/2;
-  int end_point = width_center + ((4 * BOARDWIDTH) + 2)/2;
+  int initial_point = width_center - ((7 * BOARDWIDTH))/2;
+  int end_point = width_center + ((7 * BOARDWIDTH))/2;
 
   mid = cols / 2;
     p1.second = initial_point;
     p1.first = 0;
   // draw a rect:
  video_clear();
- video_box(p1.second, p1.first, p1.second + (4 * 10) + (9 * 2) + 4,
-            p1.first + (4 * 20) + (19 * 2), 0xFFFF);
+ video_box(p1.second, p1.first, p1.second + (7 * 10) + (9 * 2),
+            p1.first + (7 * 20) + (19 * 2), 0xFFFF);
 
   // desenhando as peças:
   p1.first = 0;
   int l, c;
   for (l = 0; l < height; l++) {
-    p1.second = initial_point+4;
+    p1.second = initial_point;
     for (c = 0; c < width; c++) {
       if (matrix[l][c] > 0) {
-        video_box(p1.second, p1.first, p1.second + 4, p1.first + 4,
+        video_box(p1.second, p1.first, p1.second + 7, p1.first + 7,
                   matrix[l][c]);
       }
-      p1.second += 4 + 2;
+      p1.second += 7 + 2;
     }
-    p1.first += 4 + 2;
+    p1.first += 7 + 2;
   }
   video_show();
 }
@@ -78,7 +77,6 @@ void initialScreen(int width_center){
   for (l=0; l<7; l++)
     video_text(p.second, p.first+l, name[l]);
 
-  printf("acabou\n");
 }
 
 void showGameOver() {
@@ -101,7 +99,8 @@ void showGameOver() {
 "| $$__/ $$   \\$$ $$  | $$_____ | $$  | $$  ",
 " \\$$    $$    \\$$$   | $$     \\| $$  | $$  ",
 "  \\$$$$$$      \\$     \\$$$$$$$$ \\$$   \\$$  ",
- "Pressione o botao um para sair e qualquer outro para reiniciar" };
+ "Pressione o botao 0 para sair",
+" qualquer outro para reiniciar" };
 
                                            
   int l;
@@ -109,8 +108,7 @@ void showGameOver() {
   p.first = 5;
   p.second = 14;
 clearVideo();
-  for (l=0; l<19; l++)
+  for (l=0; l<20; l++)
     video_text(p.second, p.first+l, name[l]);
 
-  printf("acabou\n");
 }

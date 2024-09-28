@@ -49,8 +49,10 @@ int main(void) {
   pthread_create(&accel, NULL, accelListener, NULL);
   int reset = 0;
   while (1) {
-    initialScreen(d_width_center);
 
+    if (!START)
+      initialScreen(d_width_center);
+    
     while (!START) {
       if (BUTTON != 0) {
         START = 1;
@@ -65,7 +67,6 @@ int main(void) {
 	    BUTTON = 0;
 	    START = 1;
 	    while (BUTTON == 0) {
-		printf("..\n");
 		    if (BUTTON == 1) {
 			    reset = 0;
 		    }
@@ -130,7 +131,7 @@ void game() {
      
       showMatrix(BOARDHEIGHT, BOARDWIDTH, board, pts, PAUSED, d_width_center);
 
-      usleep(200000);
+      usleep(100000);
     }
     gravity(BOARDHEIGHT, BOARDWIDTH, board);
     pts += points();
@@ -154,24 +155,18 @@ void startButtonListener() {
 }
 
 void *buttonListener(void *arg) {
-  printf("lendo botao");
   int btn = 0, t;
   while (LISTEN_BTN) {
     // while (BUTTON == 0) {
-    printf("BUTTON: %d\n", BUTTON);
     KEY_read(&btn);
     if (btn & 0b0001) {
       BUTTON = 1;
-      printf("BUTTON: %d\n", BUTTON);
     } else if (btn & 0b0010) {
       BUTTON = 2;
-      printf("BUTTON: %d\n", BUTTON);
     } else if (btn & 0b0100) {
       BUTTON = 3;
-      printf("BUTTON: %d\n", BUTTON);
     } else if (btn & 0b1000) {
       BUTTON = 4;
-      printf("BUTTON: %d\n", BUTTON);
     }
   }
 }
@@ -238,7 +233,9 @@ int points() {
 }
 
 void hex_handler(int pts) {
+
   HEX_open();
+  if (pts > 999999) pts = 999999;
   HEX_set(pts);
   HEX_close();
 }
