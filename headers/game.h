@@ -55,4 +55,5 @@ boolean movePiece(Piece *piece, int height, int width, Color board[height][width
 **/
 void gravity(int height, int width, Color board[height][width]);
 
+int clearLine(int board_width, int board_height, Color board[board_height][board_width]);
 #endif // !GAME_H

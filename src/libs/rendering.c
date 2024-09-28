@@ -1,6 +1,7 @@
 #include "../../headers/rendering.h"
+#include <intelfpgaup/video.h>
 
-void initScreen(int *qnt_size, int *d_width_center, int *t_width_center) {
+void initScreen(int *width_center) {
   int lines, cols, tlines, tcols, mid;
   while (video_open() == 0) {
     printf("Não foi possível abrir o driver de vídeo\nVocê está rodando como "
@@ -8,10 +9,7 @@ void initScreen(int *qnt_size, int *d_width_center, int *t_width_center) {
   }
   clearVideo();
   video_read(&lines, &cols, &tlines, &tcols);
-  *qnt_size = cols / 5;
-  *t_width_center = tcols/2;
-  *d_width_center = cols/2;
-  
+  *width_center = cols / 2;
 }
 
 void clearVideo() {
@@ -26,21 +24,21 @@ void shutdownScreen() {
   video_close();
 }
 
-
-void showMatrix(int height, int width, Color matrix[height][width], int points, int paused,int width_center) {
+void showMatrix(int height, int width, Color matrix[height][width], int paused,
+                int width_center) {
   int lines, cols, tlines, tcols, mid;
   Pair p1;
   // preparando a tela
   video_read(&lines, &cols, &tlines, &tcols);
-  int initial_point = width_center - ((7 * BOARDWIDTH))/2;
-  int end_point = width_center + ((7 * BOARDWIDTH))/2;
+  int initial_point = width_center - ((7 * BOARDWIDTH)) / 2;
+  int end_point = width_center + ((7 * BOARDWIDTH)) / 2;
 
   mid = cols / 2;
-    p1.second = initial_point;
-    p1.first = 0;
+  p1.second = initial_point;
+  p1.first = 0;
   // draw a rect:
- video_clear();
- video_box(p1.second, p1.first, p1.second + (7 * 10) + (9 * 2),
+  video_clear();
+  video_box(p1.second, p1.first, p1.second + (7 * 10) + (9 * 2),
             p1.first + (7 * 20) + (19 * 2), 0xFFFF);
 
   // desenhando as peças:
@@ -60,55 +58,49 @@ void showMatrix(int height, int width, Color matrix[height][width], int points, 
   video_show();
 }
 
-void initialScreen(int width_center){
-  char *name[] = {
-   "___________        ___________        .__ __________",
-   "\\__    ___/  ____  \\__    ___/_______ |__|\\____    /",
-   "  |    |   _/ __ \\   |    |   \\_  __ \\|  |  /     / ",
-   "  |    |   \\  ___/   |    |    |  | \\/|  | /     /_ ",
-   "  |____|    \\___  >  |____|    |__|   |__|/_______ \\",
-   "                \\/                                \\/",
-   "       Pressione qualquer botao para iniciar        "
-  };
+void initialScreen() {
+  char *name[] = {"___________        ___________        .__ __________",
+                  "\\__    ___/  ____  \\__    ___/_______ |__|\\____    /",
+                  "  |    |   _/ __ \\   |    |   \\_  __ \\|  |  /     / ",
+                  "  |    |   \\  ___/   |    |    |  | \\/|  | /     /_ ",
+                  "  |____|    \\___  >  |____|    |__|   |__|/_______ \\",
+                  "                \\/                                \\/",
+                  "       Pressione qualquer botao para iniciar        "};
   int l;
   Pair p;
   p.first = 5;
   p.second = 14;
-  for (l=0; l<7; l++)
-    video_text(p.second, p.first+l, name[l]);
-
+  for (l = 0; l < 7; l++)
+    video_text(p.second, p.first + l, name[l]);
 }
 
 void showGameOver() {
-  char *name[] = {
-"  ______    ______   __       __  ________ ",
-" /      \\  /      \\ |  \\     /  \\|        \\",
-"|  $$$$$$\\|  $$$$$$\\| $$\\   /  $$| $$$$$$$$",
-"| $$ __\\$$| $$__| $$| $$$\\ /  $$$| $$__    ",
-"| $$|    \\| $$    $$| $$$$\\  $$$$| $$  \\   ",
-"| $$ \\$$$$| $$$$$$$$| $$\\$$ $$ $$| $$$$$   ",
-"| $$__| $$| $$  | $$| $$ \\$$$| $$| $$_____ ",
-" \\$$    $$| $$  | $$| $$  \\$ | $$| $$     \\",
-"  \\$$$$$$  \\$$   \\$$ \\$$      \\$$ \\$$$$$$$$",
-"  ______   __     __  ________  _______    ",
-" /      \\ |  \\   |  \\|        \\|       \\   ",
-"|  $$$$$$\\| $$   | $$| $$$$$$$$| $$$$$$$\\  ",
-"| $$  | $$| $$   | $$| $$__    | $$__| $$  ",
-"| $$  | $$ \\$$\\ /  $$| $$  \\   | $$    $$  ",
-"| $$  | $$  \\$$\\  $$ | $$$$$   | $$$$$$$\\  ",
-"| $$__/ $$   \\$$ $$  | $$_____ | $$  | $$  ",
-" \\$$    $$    \\$$$   | $$     \\| $$  | $$  ",
-"  \\$$$$$$      \\$     \\$$$$$$$$ \\$$   \\$$  ",
- "Pressione o botao 0 para sair",
-" qualquer outro para reiniciar" };
+  char *name[] = {"  ______    ______   __       __  ________ ",
+                  " /      \\  /      \\ |  \\     /  \\|        \\",
+                  "|  $$$$$$\\|  $$$$$$\\| $$\\   /  $$| $$$$$$$$",
+                  "| $$ __\\$$| $$__| $$| $$$\\ /  $$$| $$__    ",
+                  "| $$|    \\| $$    $$| $$$$\\  $$$$| $$  \\   ",
+                  "| $$ \\$$$$| $$$$$$$$| $$\\$$ $$ $$| $$$$$   ",
+                  "| $$__| $$| $$  | $$| $$ \\$$$| $$| $$_____ ",
+                  " \\$$    $$| $$  | $$| $$  \\$ | $$| $$     \\",
+                  "  \\$$$$$$  \\$$   \\$$ \\$$      \\$$ \\$$$$$$$$",
+                  "  ______   __     __  ________  _______    ",
+                  " /      \\ |  \\   |  \\|        \\|       \\   ",
+                  "|  $$$$$$\\| $$   | $$| $$$$$$$$| $$$$$$$\\  ",
+                  "| $$  | $$| $$   | $$| $$__    | $$__| $$  ",
+                  "| $$  | $$ \\$$\\ /  $$| $$  \\   | $$    $$  ",
+                  "| $$  | $$  \\$$\\  $$ | $$$$$   | $$$$$$$\\  ",
+                  "| $$__/ $$   \\$$ $$  | $$_____ | $$  | $$  ",
+                  " \\$$    $$    \\$$$   | $$     \\| $$  | $$  ",
+                  "  \\$$$$$$      \\$     \\$$$$$$$$ \\$$   \\$$  ",
+                  "        Pressione o botao 0 para sair",
+                  "        Qualquer outro para reiniciar"};
 
-                                           
   int l;
   Pair p;
   p.first = 5;
   p.second = 14;
-clearVideo();
-  for (l=0; l<20; l++)
-    video_text(p.second, p.first+l, name[l]);
-
+  clearVideo();
+  for (l = 0; l < 20; l++)
+    video_text(p.second, p.first + l, name[l]);
 }

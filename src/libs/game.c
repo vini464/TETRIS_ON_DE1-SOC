@@ -137,3 +137,21 @@ void gravity(int height, int width, Color board[height][width]){
     }
   }
 }
+
+
+int clearLine(int board_width, int board_height, Color board[board_height][board_width]) {
+  int j, pts = 0, combo = 0;
+  while (1) {
+    for (j = 0; j < board_width; j++) {
+      if (board[board_height - 1][j] == 0)
+        return pts;
+    }
+    for (j = 0; j < board_width; j++) {
+      board[board_height - 1][j] = 0;
+    }
+    pts += 10 + combo * combo;
+    combo++;
+    gravity(board_height, board_width, board);
+  }
+  return pts;
+}
