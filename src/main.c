@@ -11,13 +11,18 @@
 #include "../headers/rendering.h"
 #include "../headers/utils.h"
 
+// função para thread de leitura dos botões
 void *buttonListener(void *);
 
+// inicia a configuração do acelerômetro
 void startAccelListener();
+// função para a thread de leitura do acelerômetro
 void *accelListener(void *);
+// Encerra a comunicação com o acelerômetro
 void stopAccelListener();
-
+// Roda toda a lógica do jogo
 void game();
+
 
 Color BOARD[BOARDHEIGHT][BOARDWIDTH];
 int LISTEN_BTN, LISTEN_ACCEL, BUTTON, FD, WIDTH_CENTER, PTS;
@@ -30,17 +35,19 @@ int main(void) {
   boolean collide = FALSE;
   pthread_t btns_t, accel_t;
 
+  // configuração inicial
   startAccelListener();
   startButton();
   startHex();
   initScreen(&WIDTH_CENTER);
-  LISTEN_BTN = LISTEN_ACCEL = 1;
+  LISTEN_BTN = LISTEN_ACCEL = 1; // habilita a leitura do acelerômetro e dos botões
+  // criação das threads
   pthread_create(&btns_t, NULL, buttonListener, NULL);
   pthread_create(&accel_t, NULL, accelListener, NULL);
 
   while (1) {
     BUTTON = 0;
-
+    // espera o jogador iniciar o jogo
     if (!start) {
       initialScreen();
       while (!start) {
@@ -52,14 +59,15 @@ int main(void) {
     }
 
     clearVideo();
+    // roda o jogo, até o jogador perder, desistir ou reiniciar
     game();
     usleep(1000);
 
-    if (GAMEOVER) {
+    if (GAMEOVER) { // se ele perdeu mostra a tela de game over
       showGameOver();
       BUTTON = 0;
-      while (BUTTON == 0) {
-        if (BUTTON == 1) {
+      while (BUTTON == 0) { // espera o jogador apertar um botão 
+        if (BUTTON == 1) { // se ele apertar o botão 1 encerra o programa
           reset = 0;
         } else if (BUTTON > 1) {
           reset = 1;
@@ -68,17 +76,19 @@ int main(void) {
       }
       if (!reset)
         break;
-    } else {
-      if (OUT)
+    } else { 
+      if (OUT) // caso ele tenha desistido encerra o loop do jogo
         break;
       hexWriteNumber(0);
       GAMEOVER = FALSE;
     }
   }
+  // encerrando as threads
   LISTEN_ACCEL = 0;
   LISTEN_BTN = 0;
   pthread_join(btns_t, NULL);
   pthread_join(accel_t, NULL);
+  // encerrando os drivers
   stopAccelListener();
   stopButton();
   clearVideo();
@@ -91,43 +101,44 @@ void game() {
   PTS = 0;
   hexWriteNumber(PTS);
   GAMEOVER = FALSE;
+// limpa a matriz
   for (j = 0; j < BOARDHEIGHT; j++) {
     for (k = 0; k < BOARDWIDTH; k++)
       BOARD[j][k] = 0;
   }
   int collide;
-  while (GAMEOVER == FALSE) {
+  while (GAMEOVER == FALSE) { // enquanto o jogador não perdeu
     collide = FALSE;
-    ACTUAL_PIECE = getPiece(rand() % 17);
-    ACTUAL_PIECE.color = getColor(rand() % 9);
+    ACTUAL_PIECE = getPiece(rand() % 17); // pega uma peça aleatória
+    ACTUAL_PIECE.color = getColor(rand() % 9); // atribui uma cor aleatória para a peça
     while (!collide) {
-      if (BUTTON == 1) {
+      if (BUTTON == 1) { // pausa o jogo
         PAUSED = TRUE;
         BUTTON = 0;
       }
       while (PAUSED) {
-        if (BUTTON > 0 && BUTTON < 4) {
+        if (BUTTON > 0 && BUTTON < 4) { // continua o jogo
           PAUSED = FALSE;
           BUTTON = 0;
-          if (BUTTON == 2) {
+          if (BUTTON == 2) { // reinicia o jogo
             return;
           }
-          if (BUTTON == 3) {
+          if (BUTTON == 3) { // encerra o jogo
             OUT = 1;
             return;
           }
         }
       }
       collide = movePiece(&ACTUAL_PIECE, BOARDHEIGHT, BOARDWIDTH, BOARD, DOWN,
-                          &GAMEOVER);
+                          &GAMEOVER); // move a peça para baixo
 
-      showMatrix(BOARDHEIGHT, BOARDWIDTH, BOARD, PAUSED, WIDTH_CENTER);
+      showMatrix(BOARDHEIGHT, BOARDWIDTH, BOARD, PAUSED, WIDTH_CENTER); // mostra a matriz do jogo na tela
 
-      usleep(100000);
+      usleep(100000); // delay para cair a peça
     }
-    gravity(BOARDHEIGHT, BOARDWIDTH, BOARD);
-    PTS += clearLine(BOARDWIDTH, BOARDHEIGHT, BOARD);
-    hexWriteNumber(PTS);
+    gravity(BOARDHEIGHT, BOARDWIDTH, BOARD); // faz as peças cairem
+    PTS += clearLine(BOARDWIDTH, BOARDHEIGHT, BOARD); // calcula a pontuação e elimina agrupamentos
+    hexWriteNumber(PTS); // mostra a pontuação no display de sete segmentos
   }
 }
 
