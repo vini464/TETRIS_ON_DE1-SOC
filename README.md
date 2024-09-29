@@ -9,7 +9,7 @@
 
 Nesse projeto foi desenvolvido um jogo *_TetrisLike_* para a plataforma DE1-SoC da Altera/Intel, com foco na integração hardware/software, onde foi preciso fazer a comunicação do acelerometro ADXL345 com o processador Dual-core ARM Cortex-A9. Com isso foi desenvolvido uma biblioteca para utilizar o acelerometro além de utilizarmos as bibliotecas já disponiveis da IntelFPGAUP para configurações de botoões, displays de 7 segmentos e exibição de video via VGA.
 
-## [TL;DR](Too Long; Didn't Read):
+## <abbr title="Too Long Didn't Read">TL;DR</abbr>:
 
 Caso você não queira ler o texto inteiro, aqui vai um resumo:
 
