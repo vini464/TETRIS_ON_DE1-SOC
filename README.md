@@ -11,7 +11,7 @@ Nesse projeto foi desenvolvido um jogo *_TetrisLike_* para a plataforma DE1-SoC 
 
 ## <abbr title="Too Long Didn't Read">TL;DR</abbr>:
 
-Caso você não queira ler o texto inteiro, aqui vai um resumo:
+Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
 
 - Este projeto se trata do desenvolvimento de um jogo baseado no famoso Tetris, para a placa DE1-SoC. Caso você tenha uma DE1-SoC em mãos, e com acesso à internet, basta colar o seguinte código no terminal:
 ```
