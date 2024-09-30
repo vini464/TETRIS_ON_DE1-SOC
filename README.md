@@ -45,6 +45,12 @@ make game
 
 
 ## Desenvolvimento?
+*_Podemos Colocar os diagramas gerais aqui_*
+
+### Acelerometro
+
+
+
 
 ## Testes
 
