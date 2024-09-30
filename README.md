@@ -25,7 +25,23 @@ make game
 *_Adicionar links para cada topico e subtopicos aqui_*
 
 ## Como executar
+Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
 
+Para rodarmos o código, precisamos cumprir alguns requisitos que são:
+
+ 1. Uma Placa DE1-SoC.
+ 2. Linux instalados.
+ 3. As bibliotecas do IntelFPGAUP instaladas, mais especificamente a de Key, 7 segmentos e VGA.
+ 4. Um monitor com entrada VGA.
+ 5. Um cabo de Ethernet
+ 6. Um computador com terminal Linux para acessar a placa via protocolo SSH.
+
+Com todos os requisitos cumpridos basta no computador acessar a placa via protocolo SSH com ambos conectados na mesma rede e transferir o arquivo desse repositoria via protocolo SCP ou caso possua conexão com a internet na placa, basta digitar o seguinte código no terminal:
+```
+git clone https://github.com/vini464/TETRIS_ON_DE1-SOC.git && cd TETRIS_ON_DE1-SOC
+make game
+```
+> **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 
 
 ## Desenvolvimento?
