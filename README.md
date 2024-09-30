@@ -2,8 +2,6 @@
 
 *_Podemos Colocar uma Logo, como uma foto da tela inicial aqui_*
 
-
-
 ![VSCode](https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white)
 ![Neovim](https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white)
 ![C](https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white)
