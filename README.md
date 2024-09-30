@@ -1,11 +1,20 @@
 # Tetris na Placa DE1-SOC
 
-*_Podemos Colocar uma Logo, como uma foto da tela inicial aqui_*
-
-![VSCode](https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white)
-![Neovim](https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white)
-![C](https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white)
-![Linux](https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white)
+<table>
+  <tr>
+    <td>
+      <img src="assets_for_readme/inicio.png" width="300"/>
+    </td>
+    <td>
+      <p align="center">
+        <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/><br>
+        <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/><br>
+        <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/><br>
+        <img src="https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white"/>
+      </p>
+    </td>
+  </tr>
+</table>
 
 Nesse projeto foi desenvolvido um jogo *_TetrisLike_* para a plataforma DE1-SoC da Altera/Intel, com foco na integração hardware/software, onde foi preciso fazer a comunicação do acelerômetro ADXL345 com o processador Dual-core ARM Cortex-A9. Com isso foi desenvolvido uma biblioteca para utilizar o acelerômetro, além de utilizarmos as bibliotecas já disponíveis da IntelFPGAUP para configurações de botões, displays de 7 segmentos e exibição de vídeo via VGA.
 
@@ -77,11 +86,24 @@ Os botões são essenciais para controlar o fluxo do programa e para garantirmos
 # Testes
 
 1. Teste de movimentação
+
+  ![Descrição do GIF](assets_for_readme/movimentacao.gif)
+  
 2. Teste da quebra de linha
+
+   ![Descrição do GIF](assets_for_readme/quebra.gif)
 3. Teste do pause
-4. Teste de despausar
-5. Teste de reiniciar
+
+   ![Descrição do GIF](assets_for_readme/pause.gif)
+4. Teste de reiniciar
+
+    ![Descrição do GIF](assets_for_readme/reiniciar.gif)
+5. Teste de desligar
+
+    ![Descrição do GIF](assets_for_readme/desligar.gif)
 6. Teste de game over
+
+    ![Descrição do GIF](assets_for_readme/gameover.gif)
 
 # Como executar
 Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
