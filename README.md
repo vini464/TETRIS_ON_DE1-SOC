@@ -36,7 +36,7 @@ Para rodarmos o código, precisamos cumprir alguns requisitos que são:
  5. Um cabo de Ethernet
  6. Um computador com terminal Linux para acessar a placa via protocolo SSH.
 
-Com todos os requisitos cumpridos basta no computador acessar a placa via protocolo SSH com ambos conectados na mesma rede e transferir o arquivo desse repositoria via protocolo SCP ou caso possua conexão com a internet na placa, basta digitar o seguinte código no terminal:
+Com todos os requisitos cumpridos basta no computador acessar a placa via protocolo SSH com ambos conectados na mesma rede e transferir o arquivo desse repositoria via protocolo SCP. Caso possua conexão com a internet na placa, ao invés de usar SCP, basta digitar o seguinte código no terminal:
 ```
 git clone https://github.com/vini464/TETRIS_ON_DE1-SOC.git && cd TETRIS_ON_DE1-SOC
 make game
