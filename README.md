@@ -69,7 +69,7 @@ Para nos aprofundarmos mais de como exatamente funciona o acelerômetro podemos 
 
 Sendo assim, foi desenvolvido toda uma thread só para observar constantemente se houve uma atualização na direção, a função responsável por identificar a direção se chama ```get_direction()```, na qual muda um valor para -1 (esquerda) caso o eixo X esteja menor que -35, 1 (direita) caso o eixo X esteja maior que 35, ou 0 (neutro) caso não esteja inclinado suficiente.
 
-## Botoões
+## Botões
 
 Os botões são essenciais para controlar o fluxo do programa e para garantirmos isso, ele possui tambem uma thread dedicada para o seu monitoramento. Os botões da placa DE1-SoC funcionam como um número binario de 4 digitos, onde o valor da key 0 é o digito menos significativo e o botão da key 3 é o mais significativo, sendo assim, foi necessario criar um logica para identificar quando cada bit especifico desse número muda e traduziro em um comando, a key 0 resulta em um pause, a key 1 caso o jogo esteja pausado reinicia-la o jogo e a key 2 caso o jogo esteja pausado ele vai encerrar o programa. (Da pra usar isso como uma breve explicação para o diagrama, acabei fazendo mas como você que fez o diagrama, acho melhor dfeixar essa pra você)
 
