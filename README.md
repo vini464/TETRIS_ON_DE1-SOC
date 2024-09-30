@@ -9,7 +9,7 @@
 
 Nesse projeto foi desenvolvido um jogo *_TetrisLike_* para a plataforma DE1-SoC da Altera/Intel, com foco na integração hardware/software, onde foi preciso fazer a comunicação do acelerometro ADXL345 com o processador Dual-core ARM Cortex-A9. Com isso foi desenvolvido uma biblioteca para utilizar o acelerometro além de utilizarmos as bibliotecas já disponiveis da IntelFPGAUP para configurações de botoões, displays de 7 segmentos e exibição de video via VGA.
 
-## <abbr title="Too Long Didn't Read">TL;DR</abbr>:
+# <abbr title="Too Long Didn't Read">TL;DR</abbr>:
 
 Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
 
@@ -20,11 +20,11 @@ make game
 ```
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 
-## Sumario
+# Sumario
 
 *_Adicionar links para cada topico e subtopicos aqui_*
 
-## Como executar
+# Como executar
 Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
 
 Para rodarmos o código, precisamos cumprir alguns requisitos que são:
@@ -44,7 +44,7 @@ make game
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 
 
-## Desenvolvimento?
+# Desenvolvimento?
 *_Podemos Colocar os diagramas gerais aqui_*
 
 *_Queria colocar aqui uma explicação geral de como funciona e abaixo dele fazer detalhes para partes do programa, como é o caso do acelerometro logo abaixo, de qualquer forma, vou deixar escrito minha parte._*
@@ -63,7 +63,7 @@ O programa é divido em 3 threads, e podemos exemplificar como seu funcionamento
   
 
 
-#### Acelerometro
+## Acelerometro
 
 <div align="center">
   <img src="assets_for_readme/AccelSemFundo.drawio.png" alt="Diagrama de aceleração final" width="800"/>
