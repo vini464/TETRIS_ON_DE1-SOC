@@ -2,7 +2,7 @@
 
 *_Podemos Colocar uma Logo, como uma foto da tela inicial aqui_*
 
-[Desenvolvimento](#desenvolvimento)
+
 
 ![VSCode](https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white)
 ![Neovim](https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white)
@@ -24,26 +24,9 @@ make game
 
 # Sumario
 
-*_Adicionar links para cada topico e subtopicos aqui_*
+[Desenvolvimento](#desenvolvimento)
+[Como executar](#como-executar)
 
-# Como executar
-Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
-
-Para rodarmos o código, precisamos cumprir alguns requisitos que são:
-
- 1. Uma Placa DE1-SoC.
- 2. Linux instalados.
- 3. As bibliotecas do IntelFPGAUP instaladas, mais especificamente a de Key, 7 segmentos e VGA.
- 4. Um monitor com entrada VGA.
- 5. Um cabo de Ethernet
- 6. Um computador com terminal Linux para acessar a placa via protocolo SSH.
-
-Com todos os requisitos cumpridos basta no computador acessar a placa via protocolo SSH com ambos conectados na mesma rede e transferir o arquivo desse repositoria via protocolo SCP. Caso possua conexão com a internet na placa, ao invés de usar SCP, basta digitar o seguinte código no terminal:
-```
-git clone https://github.com/vini464/TETRIS_ON_DE1-SOC.git && cd TETRIS_ON_DE1-SOC
-make game
-```
-> **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 
 
 # Desenvolvimento
@@ -101,6 +84,24 @@ Para explicarmos sobre o funcionamento do acelerômetro podemos nos guiar pelo d
 5. Teste de reiniciar
 6. Teste de game over
 
+# Como executar
+Caso você só esteja interessado em rodar o jogo, não precisa ler o texto todo:
+
+Para rodarmos o código, precisamos cumprir alguns requisitos que são:
+
+ 1. Uma Placa DE1-SoC.
+ 2. Linux instalados.
+ 3. As bibliotecas do IntelFPGAUP instaladas, mais especificamente a de Key, 7 segmentos e VGA.
+ 4. Um monitor com entrada VGA.
+ 5. Um cabo de Ethernet
+ 6. Um computador com terminal Linux para acessar a placa via protocolo SSH.
+
+Com todos os requisitos cumpridos basta no computador acessar a placa via protocolo SSH com ambos conectados na mesma rede e transferir o arquivo desse repositoria via protocolo SCP. Caso possua conexão com a internet na placa, ao invés de usar SCP, basta digitar o seguinte código no terminal:
+```
+git clone https://github.com/vini464/TETRIS_ON_DE1-SOC.git && cd TETRIS_ON_DE1-SOC
+make game
+```
+> **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 
 
 # Conclusão
