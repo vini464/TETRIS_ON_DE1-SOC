@@ -41,7 +41,7 @@ Além disso, temos limitações do ponto de vista de produção:
 
 Para melhor compreensão, nosso sistema foi dividido em três partes: `controle do jogador`, `lógica do jogo` e `exibição`.   
 
-Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botoes) [Acelerômetro](#acelerometro).
+Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botões) [Acelerômetro](#acelerometro).
 
 Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo.
 
