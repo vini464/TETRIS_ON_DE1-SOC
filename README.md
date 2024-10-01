@@ -128,12 +128,13 @@ make game
 ````
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 # tecnologias utilizadas:
-<div style="display:inline">
+<div style="display:flex; flex-direction: row;">
 <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white"/>
 </div>
+
 # Conclusão
 
 Foi desenvolvido um jogo semelhante ao Tetris funcional e divertido com mecânicas adicionais como a de gravidade nos blocos. Para isso foi preciso entender conceitos de como o hardware e o software interagem, conhecimentos do sistema operacional Linux e principalmente como ele gerencia a memória com a finalidade de podermos fazer a virtualização dela, aprimorar o conhecimento na linguagem C e obter um domínio básico sobre a placa DE1-SoC e suas ferramentas, bibliotecas e estrutura. 
