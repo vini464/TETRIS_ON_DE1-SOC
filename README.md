@@ -43,7 +43,7 @@ Para melhor compreensão, nosso sistema foi dividido em três partes: `controle 
 
 Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botões) [Acelerômetro](#acelerometro).
 
-Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo. Veja mais em [lógica](#lógica)
+Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo. 
 
 Por fim temos a camada de `exibição`. Nela nós utilizamos os displays de 7 segmentos para mostrar a pontuação para o usuário, e a `interface VGA` para exibir o jogo. veja: [exibição](#exição).
 
@@ -83,6 +83,8 @@ Os botões são essenciais para controlar o fluxo do programa e para garantirmos
 </div>
 
 ## Game
+
+Aqui é onde nós integramos todas as camadas que implementamos, podemos entender seu funcionamento por meio do seguinte fluxograma
 
 
 # Testes
@@ -125,15 +127,18 @@ Clone o repositório:
 ```
 git clone https://github.com/vini464/TETRIS_ON_DE1-SOC.git && cd TETRIS_ON_DE1-SOC
 make game
-````
+```
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
-# tecnologias utilizadas:
-<div style="display:flex; flex-direction: row;">
+# Tecnologias utilizadas:
+Para o desenvolvimento desse projeto, utilizamos as seguintes tecnologias e ferramentas:
+
+- Editores de texto:
 <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/><br>
+- Linguagem:
 <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/><br>
+- Sistema Operacional:
 <img src="https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white"/>
-</div>
 
 # Conclusão
 
