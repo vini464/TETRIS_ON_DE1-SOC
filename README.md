@@ -45,7 +45,7 @@ Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetr
 
 Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo. 
 
-Por fim temos a camada de `exibição`. Nela nós utilizamos os displays de 7 segmentos para mostrar a pontuação para o usuário, e a `interface VGA` para exibir o jogo. veja: [exibição](#exição).
+Por fim temos a camada de `exibição`. Nela nós utilizamos os displays de 7 segmentos para mostrar a pontuação para o usuário, e a `interface VGA` para exibir o jogo. veja: [VGA](#vga).
 
 ## Acelerometro
 
@@ -75,16 +75,23 @@ Sendo assim, foi desenvolvido toda uma thread só para observar constantemente s
 
 ## Botões
 
-Os botões são essenciais para controlar o fluxo do programa e para garantirmos isso, ele também possui uma thread dedicada para o seu monitoramento. Os botões da placa DE1-SoC são lidos como um número de 4 bits, onde o menos significativo representa o botão mais à direita e o mais significativo representa o mais à esquerda. Sendo assim, foi necessario criar um lógica para identificar quando cada bit específico desse número muda e traduzir em um comando, a key 0 resulta em um pause, a key 1 caso o jogo esteja pausado reinicia-la o jogo e a key 2 caso o jogo esteja pausado ele vai encerrar o programa.
+Os botões são essenciais para controlar o fluxo do programa e para garantirmos isso, ele também possui uma thread dedicada para o seu monitoramento. Os botões da placa DE1-SoC são lidos como um número de 4 bits, onde o menos significativo representa o botão mais à direita e o mais significativo representa o mais à esquerda. Sendo assim, foi necessario criar um lógica para identificar quando cada bit específico desse número muda e indicar para função principal qual botão foi pressionado para que seja feia a ação correspondente (veja [Game](#game))
 
 <div align="center">
     <img src="assets_for_readme/buttons_light.jpg" alt="Diagrama de fluxo: Botões" width="800"/>
     <p><em>Figura btns: Diagrama dos botões </em></p>
 </div>
 
+## VGA
+
 ## Game
 
-Aqui é onde nós integramos todas as camadas que implementamos, podemos entender seu funcionamento por meio do seguinte fluxograma
+Aqui é onde nós integramos todas as camadas que implementamos, podemos entender seu funcionamento por meio do seguinte fluxograma:
+
+<div align="center">
+    <img src="assets_for_readme/flow.jpg" alt="Diagrama de fluxo: jogo" width="800"/>
+    <p><em>Figura btns: Diagrama do jogo </em></p>
+</div>
 
 
 # Testes
