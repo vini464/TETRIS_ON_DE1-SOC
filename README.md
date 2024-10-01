@@ -148,8 +148,10 @@ Para o desenvolvimento desse projeto, utilizamos as seguintes tecnologias e ferr
 Editores de texto:
 <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/>
 <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/>
+
 Linguagem:
 <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/>
+
 Sistema Operacional:
 <img src="https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white"/>
 
