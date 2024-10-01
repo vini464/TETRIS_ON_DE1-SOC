@@ -39,12 +39,13 @@ Além disso, temos limitações do ponto de vista de produção:
 
 # Desenvolvimento
 
-Para melhor compreensão, nosso sistema foi dividido em três partes: `controle do jogador`, `lógica do jogo` e `exibição`.   
+Para melhor compreensão, nosso sistema foi dividido em três partes: `controle do jogador`, `lógica do jogo` e `exibição`.
 
 Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botões) [Acelerômetro](#acelerometro).
 
-Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo.
+Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo. Veja mais em [lógica](#lógica)
 
+Por fim temos a camada de `exibição`. Nela nós utilizamos os displays de 7 segmentos para mostrar a pontuação para o usuário, e a `interface VGA` para exibir o jogo. veja: [exibição](#exição).
 
 ## Acelerometro
 
@@ -57,24 +58,29 @@ Para nos aprofundarmos mais de como exatamente funciona o acelerômetro podemos 
 
 1. Abrir o Diretório /dev/mem e mapeá-la
 
-   O arquivo especial /dev/mem representa a memória física do dispositivo. Ele é fundamental para acessarmos dispositivos de hardware, como o barramento I2C. Para abrir esse arquivo, usamos o comando ```open()``` da biblioteca unistd.h em C.
-   Para mapearmos a memória utilizamos o comando ```mmap()``` usando o endereço 0xFFC04000 como endereço base, isso nos permite virtualizar endereços de memória físicos para o espaço de endereçamento do processo de usuário, nos dando a capacidade de ler e escrever diretamente nos registradores do I2C.
+   O arquivo especial /dev/mem representa a memória física do dispositivo. Ele é fundamental para acessarmos dispositivos de hardware, como o barramento I2C. Para abrir esse arquivo, usamos o comando `open()` da biblioteca unistd.h em C.
+   Para mapearmos a memória utilizamos o comando `mmap()` usando o endereço 0xFFC04000 como endereço base, isso nos permite virtualizar endereços de memória físicos para o espaço de endereçamento do processo de usuário, nos dando a capacidade de ler e escrever diretamente nos registradores do I2C.
 
 2. Configurar o I2C e Acelerômetro
 
-   Para configurar o I2C foi necessário criar funções para escrever nos registradores do I2C, feito isso, devemos configurar a comunicação escrevendo nos seus registradores, entre os principais podemos citar o seu registrador de enable que define se está havendo alguma comunicação, seu registrador de comando(```I2C0_CON```) que configura como será o comportamento da comunicação, o registrador de target(```I2C0_TAR```) que define para onde a comunicação vai apontar, e seu registrador de dados(```I2C0_DATA_CMD```), que permite a leitura ou escrita de dados no acelerômetro neste caso.
-   Para escrever nele precisamos enviar um comando de start para o registrador DATA_CMD e esperar seu buffer ser esvaziado, no caso da leitura, adiciona-se o passo de enviar um pedido de leitura para então checar seu buffer no registrador ```I2C0_RXFLR```.
-   Conseguindo acessar os registradores do acelerômetro, precisamos configurá-lo e ela se dar principalmente setando como vamos ler os dados no registrador ```DATA_FORMAT```, limiar de interrupções nos registradores ```THRESH_ACT```,```ACT_INACT_CTL``` e ```INT_ENABLE```, velocidade de leitura no registrador ```BW_RATE``` e modo de medição no ```POWER_CTL```.
+   Para configurar o I2C foi necessário criar funções para escrever nos registradores do I2C, feito isso, devemos configurar a comunicação escrevendo nos seus registradores, entre os principais podemos citar o seu registrador de enable que define se está havendo alguma comunicação, seu registrador de comando(`I2C0_CON`) que configura como será o comportamento da comunicação, o registrador de target(`I2C0_TAR`) que define para onde a comunicação vai apontar, e seu registrador de dados(`I2C0_DATA_CMD`), que permite a leitura ou escrita de dados no acelerômetro neste caso.
+   Para escrever nele precisamos enviar um comando de start para o registrador DATA_CMD e esperar seu buffer ser esvaziado, no caso da leitura, adiciona-se o passo de enviar um pedido de leitura para então checar seu buffer no registrador `I2C0_RXFLR`.
+   Conseguindo acessar os registradores do acelerômetro, precisamos configurá-lo e ela se dar principalmente setando como vamos ler os dados no registrador `DATA_FORMAT`, limiar de interrupções nos registradores `THRESH_ACT`,`ACT_INACT_CTL` e `INT_ENABLE`, velocidade de leitura no registrador `BW_RATE` e modo de medição no `POWER_CTL`.
 5. Calibração e interrupção por movimento
 
    A calibração serve para estabelecermos uma posição inicial para os eixos XYZ, ela ocorre fazendo uma média de uma quantidade especificada de leituras deles para então criarmos conseguirmos o offset que tornará aquela posição da placa como a posição 0 (ou muito próxima disso).
-   Após calibrado, também foi estabelecido um limiar de movimentação, basicamente quanto devemos movimentar para identificar uma movimentação e assim fazer uma leitura, isso é configurado pelo ```THRESH_ACT``` e após alguns testes colocamos com 125mg, sendo g uma constante para a força da gravidade da Terra.
+   Após calibrado, também foi estabelecido um limiar de movimentação, basicamente quanto devemos movimentar para identificar uma movimentação e assim fazer uma leitura, isso é configurado pelo `THRESH_ACT` e após alguns testes colocamos com 125mg, sendo g uma constante para a força da gravidade da Terra.
 
-Sendo assim, foi desenvolvido toda uma thread só para observar constantemente se houve uma atualização na direção, a função responsável por identificar a direção se chama ```get_direction()```, na qual muda um valor para -1 (esquerda) caso o eixo X esteja menor que -35, 1 (direita) caso o eixo X esteja maior que 35, ou 0 (neutro) caso não esteja inclinado suficiente.
+Sendo assim, foi desenvolvido toda uma thread só para observar constantemente se houve uma atualização na direção, a função responsável por identificar a direção se chama `get_direction()`, na qual muda um valor para -1 (esquerda) caso o eixo X esteja menor que -35, 1 (direita) caso o eixo X esteja maior que 35, ou 0 (neutro) caso não esteja inclinado suficiente.
 
 ## Botões
 
 Os botões são essenciais para controlar o fluxo do programa e para garantirmos isso, ele também possui uma thread dedicada para o seu monitoramento. Os botões da placa DE1-SoC são lidos como um número de 4 bits, onde o menos significativo representa o botão mais à direita e o mais significativo representa o mais à esquerda. Sendo assim, foi necessario criar um lógica para identificar quando cada bit específico desse número muda e traduzir em um comando, a key 0 resulta em um pause, a key 1 caso o jogo esteja pausado reinicia-la o jogo e a key 2 caso o jogo esteja pausado ele vai encerrar o programa.
+
+<div align="center">
+    <img src="assets_for_readme/buttons_light.jpg" alt="Diagrama de fluxo: Botões" width="800"/>
+    <p><em>Figura btns: Diagrama dos botões </em></p>
+</div>
 
 ## Game
 
