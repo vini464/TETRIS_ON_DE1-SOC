@@ -10,11 +10,10 @@
 - [Desenvolvimento](#desenvolvimento)
 - [Acelerometro](#acelerometro)
 - [Botões](#botões)
+- [VGA](#vga)
 - [Game](#game)
-
 - [Testes](#testes)
 - [Como executar](#como-executar)
-
 - [Conclusão](#conclusão)
 
 
@@ -84,6 +83,13 @@ Os botões são essenciais para controlar o fluxo do programa e para garantirmos
 
 ## VGA
 
+Para mostrarmos o `tabuleiro` para o jogador, apenas percorremos nossa matriz e verificamos se há ou não uma cor escrita nela. Caso tenha: mostramos essa cor, do contrário não mostramos nada. Antes disso, criamos um retângulo branco com as dimensões da nossa matriz. Podemos visualizar essa mecânica com a imagem abaixo:
+
+<div align="center">
+    <img src="assets_for_readme/vga.png" alt="exemplificação do funcionamento do vga" width="800"/>
+    <p><em>Figura vga: exemplo de exibição de uma peça</em></p>
+</div>
+
 ## Game
 
 Aqui é onde nós integramos todas as camadas que implementamos, podemos entender seu funcionamento por meio do seguinte fluxograma:
@@ -108,13 +114,13 @@ Aqui é onde nós integramos todas as camadas que implementamos, podemos entende
    ![Descrição do GIF](assets_for_readme/pause.gif)
 4. Teste de reiniciar
 
-    ![Descrição do GIF](assets_for_readme/reiniciar.gif)
+   ![Descrição do GIF](assets_for_readme/reiniciar.gif)
 5. Teste de desligar
 
-    ![Descrição do GIF](assets_for_readme/desligar.gif)
+   ![Descrição do GIF](assets_for_readme/desligar.gif)
 6. Teste de game over
 
-    ![Descrição do GIF](assets_for_readme/gameover.gif)
+   ![Descrição do GIF](assets_for_readme/gameover.gif)
 
 # Como executar
 
