@@ -28,19 +28,23 @@ Alguns requisitos foram impostos para o desenvolvimento desse projeto, do ponto 
 - O movimento do jogador deve ser capturado pelo acelerômetro presente na placa;
 - O jogador deve ser capaz de `iniciar`, `pausar`, `continuar` e `sair`.
 - O jogo deve pontuar e eliminar agrupamentos;
-- O jogador não pode mudar a orientação das peças
+- O jogador não pode mudar a orientação das peças.
+
 Além disso, temos limitações do ponto de vista de produção:
+
 - Os códigos devem ser escritos em linguagem C;
 - O sistema só poderá utilizar os componentes presentes na placa;
 - Não é permitido o uso de bibliotecas para o acelerômetro;
 - A exibição do jogo deverá ser realizada através da `interface VGA`.
 
 # Desenvolvimento
-*_Podemos Colocar os diagramas gerais aqui_*
 
-*_Queria colocar aqui uma explicação geral de como funciona e abaixo dele fazer detalhes para partes do programa, como é o caso do acelerometro logo abaixo, de qualquer forma, vou deixar escrito minha parte._*
+Para melhor compreensão, nosso sistema foi dividido em três partes: `controle do jogador`, `lógica do jogo` e `exibição`.   
 
-O programa é divido em 3 threads, e podemos exemplificar como seu funcionamento se dar a partir delas. (Tenta dar um apanhado geral aqui, sei muito oq botar não)
+Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botoes) [Acelerômetro](#acelerometro).
+
+Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo.
+
 
 ## Acelerometro
 
@@ -118,10 +122,12 @@ make game
 ````
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 # tecnologias utilizadas:
+<div display="inline">
 <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/OS-Linux-yellow?logo=linux&logoColor=white"/>
+</div>
 # Conclusão
 
 Foi desenvolvido um jogo semelhante ao Tetris funcional e divertido com mecânicas adicionais como a de gravidade nos blocos. Para isso foi preciso entender conceitos de como o hardware e o software interagem, conhecimentos do sistema operacional Linux e principalmente como ele gerencia a memória com a finalidade de podermos fazer a virtualização dela, aprimorar o conhecimento na linguagem C e obter um domínio básico sobre a placa DE1-SoC e suas ferramentas, bibliotecas e estrutura. 
