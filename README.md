@@ -122,7 +122,7 @@ make game
 ````
 > **Obs: Você precisa de privilégio de administrador para rodar o jogo.**
 # tecnologias utilizadas:
-<div display="inline">
+<div style="display:inline">
 <img src="https://img.shields.io/badge/Editor-VSCode-blue?logo=visual-studio-code&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Editor-Neovim-green?logo=neovim&logoColor=white"/><br>
 <img src="https://img.shields.io/badge/Linguagem-C-blue?logo=c&logoColor=white"/><br>
