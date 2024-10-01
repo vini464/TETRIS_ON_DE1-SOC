@@ -1,4 +1,3 @@
-# TETRIZ 
 <div align="center">
     <img src="assets_for_readme/inicio.png" width="300"/>
     <p><em>TETRIZ</em></p>
