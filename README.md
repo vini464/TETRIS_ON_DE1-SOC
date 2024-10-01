@@ -40,7 +40,7 @@ Além disso, temos limitações do ponto de vista de produção:
 
 Para melhor compreensão, nosso sistema foi dividido em três partes: `controle do jogador`, `lógica do jogo` e `exibição`.
 
-Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [botões](#botões) [Acelerômetro](#acelerometro).
+Na camada de `controle do jogador` nós tivemos que trabalhar com o acelerômetro para a movimentação do jogador e decidimos utilizar os botões para as ações: `iniciar`, `pausar`, `continuar`, `reiniciar` e `sair`. Caso queira ver com mais detalhes como cadas implementação funciona, veja: [Botões](#botões) ou [Acelerômetro](#acelerometro).
 
 Para a `lógica do jogo` temos uma matriz que simbolizar o `tabuleiro` do jogo, nele nós guardamos apenas a informação de qual cor está em cada quadrado (0 significa que aquele espaço está vazio). Além disso, temos uma estrutura de `peça` que inidica a posição e a cor de cada peça. Para o jogo ter sentido, implementamos funções que movem `peças` no `tabuleiro`, ou seja, movem a cor da matriz que está na posição indicada pela estrutura. Também temos uma função para limpar uma linha completa (e calcular a pontuação obitida) e uma função que adiciona gravidade (no sentido físico) ao jogo. 
 
@@ -102,25 +102,29 @@ Aqui é onde nós integramos todas as camadas que implementamos, podemos entende
 
 # Testes
 
-1. Teste de movimentação
+### Teste de movimentação
 
 ![Descrição do GIF](assets_for_readme/movimentacao.gif)
 
-2. Teste da quebra de linha
+### Teste da quebra de linha
 
-   ![Descrição do GIF](assets_for_readme/quebra.gif)
-3. Teste do pause
+![Descrição do GIF](assets_for_readme/quebra.gif)
 
-   ![Descrição do GIF](assets_for_readme/pause.gif)
-4. Teste de reiniciar
+### Teste do pause
 
-   ![Descrição do GIF](assets_for_readme/reiniciar.gif)
-5. Teste de desligar
+![Descrição do GIF](assets_for_readme/pause.gif)
 
-   ![Descrição do GIF](assets_for_readme/desligar.gif)
-6. Teste de game over
+### Teste de reiniciar
 
-   ![Descrição do GIF](assets_for_readme/gameover.gif)
+![Descrição do GIF](assets_for_readme/reiniciar.gif)
+
+### Teste de desligar
+
+![Descrição do GIF](assets_for_readme/desligar.gif)
+   
+### Teste de game over
+
+![Descrição do GIF](assets_for_readme/gameover.gif)
 
 # Como executar
 
